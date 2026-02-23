@@ -202,6 +202,7 @@ webapp/
 - ✅ Review system for concluded steps
 - ✅ Real-time validation and checks
 - ✅ Responsive sidebar with plan search
+- ✅ **Progression percentage in sidebar plan cards** - at-a-glance completion status
 - ✅ D1 database integration
 - ✅ Full CRUD API
 - ✅ Persistent data storage
@@ -209,9 +210,16 @@ webapp/
 - ✅ **Fixed**: Multiple plan creation bug (event listener duplication)
 - ✅ **Fixed**: Cursor jumping when typing (focus/selection preservation)
 - ✅ **Fixed**: Step cards alignment (top-aligned)  
-- ✅ **Fixed**: Scroll behavior - clean click-to-center solution (Option 1)
+- ✅ **Fixed**: Active card always centered and visible during typing
 
 ## Recent Updates
+
+### February 23, 2026 - Progression Percentage in Sidebar
+- **Added**: Progression percentage display in sidebar plan mini-cards
+- **Feature**: Each plan card now shows completion percentage next to the title
+- **Calculation**: Uses maximum progress of all concluded steps (same as main view)
+- **Benefit**: At-a-glance view of engagement completion status without opening each plan
+- **Example**: "Example Engagement Plan 45%"
 
 ### February 23, 2026 - Active Card Always Visible (v6 - FINAL CORRECT FIX)
 - **Fixed**: Active card now stays consistently centered and visible during all typing
