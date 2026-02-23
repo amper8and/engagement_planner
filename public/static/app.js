@@ -378,7 +378,7 @@ function renderStepCard(step, options) {
   const lockedFieldClass = "opacity-50 cursor-not-allowed";
 
   return `
-    <div class="w-[360px] shrink-0 rounded-2xl border bg-white shadow-sm">
+    <div class="w-[360px] shrink-0 rounded-2xl border bg-white shadow-sm" data-step-card data-step-id="${step.id}">
       <div class="p-4">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
@@ -825,16 +825,12 @@ function render() {
       }
       
       if (targetElement) {
-        // Set flag to prevent scroll during programmatic focus restoration
-        isRestoringFocus = true;
-        // Use preventScroll to stop browser's native scroll behavior during focus
+        // Use preventScroll to stop ALL scroll behavior during focus restoration
         targetElement.focus({ preventScroll: true });
         // Restore cursor position
         if (targetElement.setSelectionRange && preserveState.selectionStart !== null) {
           targetElement.setSelectionRange(preserveState.selectionStart, preserveState.selectionEnd);
         }
-        // Clear flag after a short delay
-        setTimeout(() => { isRestoringFocus = false; }, 50);
       }
     });
   }
@@ -845,8 +841,16 @@ function render() {
 // Global flag to ensure event listeners are only attached once
 let eventListenersAttached = false;
 
-// Flag to prevent scrollIntoView during programmatic focus restoration
-let isRestoringFocus = false;
+// Function to scroll a step card into view (centers horizontally)
+function scrollStepCardIntoView(stepCardElement) {
+  if (stepCardElement && stepCardElement.dataset.stepCard !== undefined) {
+    stepCardElement.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'nearest', 
+      inline: 'center' 
+    });
+  }
+}
 
 function attachEventListeners() {
   // Prevent duplicate event listeners
@@ -947,20 +951,18 @@ function attachEventListeners() {
     }
   });
 
-  // Handle focus events - scroll input into view when focused (using event delegation)
-  root.addEventListener('focus', (e) => {
-    const target = e.target;
-    const isInputField = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT';
+  // Handle clicks on step cards or input fields - scroll card into view
+  root.addEventListener('mousedown', (e) => {
+    // Find the closest step card (whether clicking on card itself or an input inside it)
+    const stepCard = e.target.closest('[data-step-card]');
     
-    // Only scroll if this is a user-initiated focus, not programmatic focus restoration
-    if (isInputField && target.dataset.field && !isRestoringFocus) {
-      // Scroll element into view horizontally, centered in viewport
-      // Use setTimeout to ensure any browser autoscroll happens first
+    if (stepCard) {
+      // Use setTimeout to let the click complete first, then scroll
       setTimeout(() => {
-        target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      }, 100);
+        scrollStepCardIntoView(stepCard);
+      }, 10);
     }
-  }, true); // Use capture phase to catch focus events
+  });
 }
 
 // Initialize app
