@@ -214,6 +214,17 @@ webapp/
 
 ## Recent Updates
 
+### February 23, 2026 - Improved Sidebar Plan Cards
+- **Enhanced**: Bigger, bolder progression percentage for better visibility
+- **Improved**: Replaced "Delete" text button with compact trash icon
+- **Refined**: Centered title and dates for professional appearance
+- **Changes**:
+  - Percentage size: Doubled from small (text-xs) to large (text-2xl font-bold)
+  - Delete button: Now uses trash bin SVG icon instead of text (saves ~40px space)
+  - Layout: Title and dates centered, percentage and delete button grouped on right
+  - Visual hierarchy: Percentage is now the dominant visual element
+- **Result**: Clean, professional sidebar cards with at-a-glance completion status
+
 ### February 23, 2026 - Progression Percentage in Sidebar
 - **Added**: Progression percentage display in sidebar plan mini-cards
 - **Feature**: Each plan card now shows completion percentage next to the title
