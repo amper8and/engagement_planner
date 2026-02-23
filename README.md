@@ -208,32 +208,36 @@ webapp/
 - ✅ Beautiful UI with Tailwind CSS
 - ✅ **Fixed**: Multiple plan creation bug (event listener duplication)
 - ✅ **Fixed**: Cursor jumping when typing (focus/selection preservation)
-- ✅ **Fixed**: Step cards alignment (top-aligned) and auto-scroll on focus
-- ✅ **Fixed**: Constant recentering while typing (custom scrollIntoView prevention)
-- ✅ **Fixed**: Browser native scroll during typing (preventScroll: true)
+- ✅ **Fixed**: Step cards alignment (top-aligned)  
+- ✅ **Fixed**: Scroll behavior - clean click-to-center solution (Option 1)
 
 ## Recent Updates
 
-### February 23, 2026 - Browser Native Scroll Fix (COMPLETE)
-- **Fixed**: "Centers off the page" issue during typing (browser native scroll behavior)
-- **Root Cause**: Even with `isRestoringFocus` flag preventing custom scrollIntoView, the browser's NATIVE `focus()` method was automatically scrolling the element into view during cursor restoration
-- **Solution**: Use `focus({ preventScroll: true })` instead of `focus()` during programmatic focus restoration
-- **Implementation**: 
-  - Changed `targetElement.focus()` to `targetElement.focus({ preventScroll: true })` on line 830
-  - This completely disables ALL scroll behavior (both custom and browser native) during typing
-  - Combined with `isRestoringFocus` flag for double protection
-- **Result**: 
-  - ✅ Click or tab into field → scrolls into view smoothly (user-initiated)
-  - ✅ Type in field → viewport stays COMPLETELY STABLE (no scroll at all)
-  - ✅ Cursor position preserved perfectly
-  - ✅ Works for all input types (text, date, textarea, number, range)
-  - ✅ No recentering, no jumping, no viewport movement while typing
+### February 23, 2026 - Clean Scroll Solution (FINAL)
+- **Fixed**: Complete rewrite of scroll behavior using dedicated approach
+- **Problem**: Previous attempts tried to distinguish between user focus and programmatic focus, but this was overly complex and unreliable due to browser native behavior
+- **Solution**: Completely separated scroll logic from focus/input events
+  - Scroll ONLY happens on mousedown (click/selection)
+  - Typing/input events have ZERO scroll behavior
+  - Clean, simple, predictable
+- **Implementation**:
+  - Added `data-step-card` attribute to step card containers
+  - Created dedicated `scrollStepCardIntoView()` function
+  - Added mousedown event listener that detects clicks and scrolls parent card
+  - Removed all focus event scroll logic
+  - Removed `isRestoringFocus` flag (no longer needed)
+  - Cursor restoration uses `preventScroll: true`
+- **Result**:
+  - ✅ Click anywhere on step card → card centers in viewport
+  - ✅ Click input field → parent card centers in viewport
+  - ✅ Type in any field → ZERO scroll, viewport completely stable
+  - ✅ Simple, maintainable code
+  - ✅ Works for all input types
 
-### February 23, 2026 - Critical Focus Fix Release
-- **Fixed**: Constant recentering while typing - prevented custom scrollIntoView during programmatic focus
-- **Root Cause**: Focus event listener was triggering scrollIntoView on EVERY focus event
-- **Solution**: Added `isRestoringFocus` flag to distinguish between user-initiated and programmatic focus
-- **Result**: Prevented custom scrollIntoView, but browser native scroll still occurred (see fix above)
+### February 23, 2026 - Previous Scroll Fix Attempts (Superseded)
+- Attempted to use `isRestoringFocus` flag and `preventScroll: true`
+- These approaches were overly complex and fought with browser behavior
+- Replaced with clean click-based solution above
 
 ### February 23, 2026 - UI/UX Polish Release
 - **Fixed**: Step cards now top-aligned for professional appearance (was center-aligned)
