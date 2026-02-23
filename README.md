@@ -201,7 +201,9 @@ webapp/
 - ✅ Status management (Planned/Concluded)
 - ✅ Review system for concluded steps
 - ✅ Real-time validation and checks
-- ✅ Responsive sidebar with plan search
+- ✅ Responsive sidebar with plan search and collapse/expand toggle
+- ✅ **Fixed sidebar positioning** - doesn't scroll with main content
+- ✅ **Collapsible sidebar** - toggle button to expand/collapse for more workspace
 - ✅ **Progression percentage in sidebar plan cards** - at-a-glance completion status
 - ✅ D1 database integration
 - ✅ Full CRUD API
@@ -213,6 +215,21 @@ webapp/
 - ✅ **Fixed**: Active card always centered and visible during typing
 
 ## Recent Updates
+
+### February 23, 2026 - Collapsible Fixed Sidebar
+- **Added**: Sidebar is now fixed and doesn't scroll with main content
+- **Added**: Toggle button to collapse/expand sidebar for more workspace
+- **Features**:
+  - Fixed positioning: Sidebar stays in place while scrolling
+  - Smooth transitions: 300ms animation when collapsing/expanding
+  - Dynamic button: Chevron icon changes direction (>> when collapsed, << when expanded)
+  - Responsive layout: Main content adjusts width automatically
+  - State management: sidebarCollapsed state in AppState
+- **Benefits**:
+  - More screen space when sidebar collapsed
+  - Sidebar always accessible with one click
+  - Professional sliding animation
+  - Better focus on engagement cards when needed
 
 ### February 23, 2026 - Improved Sidebar Plan Cards
 - **Enhanced**: Bigger, bolder progression percentage for better visibility
