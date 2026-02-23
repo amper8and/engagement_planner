@@ -185,6 +185,7 @@ class AppState {
     this.plans = [];
     this.activePlanId = null;
     this.sidebarQuery = "";
+    this.sidebarCollapsed = false;
     this.listeners = [];
     this.loadPlans();
   }
@@ -362,6 +363,11 @@ class AppState {
 
   setSidebarQuery(query) {
     this.sidebarQuery = query;
+    this.notify();
+  }
+
+  toggleSidebar() {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
     this.notify();
   }
 }
@@ -592,7 +598,7 @@ function render() {
     <div class="min-h-screen bg-slate-50 text-slate-900">
       <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <aside class="w-[320px] border-r bg-white">
+        <aside class="fixed left-0 top-0 h-screen z-20 border-r bg-white transition-transform duration-300 ${appState.sidebarCollapsed ? '-translate-x-full' : 'translate-x-0'} w-[320px]">
           <div class="p-4">
             <div class="text-xs font-semibold text-slate-500">Engagement Plan Monitor</div>
             <div class="mt-1 flex items-center justify-between gap-3">
@@ -669,8 +675,23 @@ function render() {
           </div>
         </aside>
 
+        <!-- Sidebar Toggle Button -->
+        <button
+          class="${BTN} fixed left-2 top-2 z-30 rounded-xl bg-white border shadow-lg p-2 hover:bg-slate-50 active:bg-slate-100 transition-all duration-300 ${appState.sidebarCollapsed ? '' : 'left-[328px]'}"
+          data-action="toggleSidebar"
+          title="${appState.sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            ${appState.sidebarCollapsed ? `
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+            ` : `
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            `}
+          </svg>
+        </button>
+
         <!-- Main -->
-        <main class="flex-1">
+        <main class="flex-1 transition-all duration-300 ${appState.sidebarCollapsed ? 'ml-0' : 'ml-[320px]'}">
           <!-- Header -->
           <div class="sticky top-0 z-10 bg-slate-50/90 backdrop-blur border-b">
             <div class="p-5 flex flex-col gap-4">
@@ -909,6 +930,9 @@ function attachEventListeners() {
     e.stopPropagation();
 
     switch (action) {
+      case 'toggleSidebar':
+        appState.toggleSidebar();
+        break;
       case 'createPlan':
         appState.createPlan();
         break;
