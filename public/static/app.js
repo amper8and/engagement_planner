@@ -825,11 +825,21 @@ function render() {
       }
       
       if (targetElement) {
+        // CRITICAL: Save scroll position BEFORE any focus/selection operations
+        const scrollContainer = targetElement.closest('.overflow-x-auto');
+        const savedScrollLeft = scrollContainer ? scrollContainer.scrollLeft : 0;
+        
         // Use preventScroll to stop ALL scroll behavior during focus restoration
         targetElement.focus({ preventScroll: true });
+        
         // Restore cursor position
         if (targetElement.setSelectionRange && preserveState.selectionStart !== null) {
           targetElement.setSelectionRange(preserveState.selectionStart, preserveState.selectionEnd);
+        }
+        
+        // CRITICAL: Force restore scroll position after focus/selection
+        if (scrollContainer) {
+          scrollContainer.scrollLeft = savedScrollLeft;
         }
       }
     });
