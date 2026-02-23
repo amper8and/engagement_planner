@@ -571,7 +571,7 @@ function render() {
         </div>
       </div>
     `;
-    attachEventListeners();
+    // Note: Event listeners are attached once at startup, not on each render
     return;
   }
 
@@ -797,13 +797,22 @@ function render() {
     </div>
   `;
 
-  attachEventListeners();
+  // Note: Event listeners are attached once at startup, not on each render
 }
 
+// Global flag to ensure event listeners are only attached once
+let eventListenersAttached = false;
+
 function attachEventListeners() {
+  // Prevent duplicate event listeners
+  if (eventListenersAttached) {
+    return;
+  }
+  eventListenersAttached = true;
+
   const root = document.getElementById('root');
 
-  // Handle button clicks
+  // Handle button clicks using event delegation (single listener)
   root.addEventListener('click', (e) => {
     const target = e.target.closest('[data-action]');
     if (!target) return;
@@ -849,7 +858,7 @@ function attachEventListeners() {
     }
   });
 
-  // Handle input changes
+  // Handle input changes using event delegation (single listener)
   root.addEventListener('input', (e) => {
     const target = e.target;
     const field = target.dataset.field;
@@ -896,4 +905,6 @@ function attachEventListeners() {
 
 // Initialize app
 appState.subscribe(render);
+// Attach event listeners once at startup
+attachEventListeners();
 render();
