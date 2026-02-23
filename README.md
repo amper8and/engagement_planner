@@ -21,7 +21,7 @@ A comprehensive project engagement planning and monitoring tool built with Hono 
 ## URLs
 
 - **Production**: https://webapp-5fs.pages.dev
-- **Latest Deployment**: https://728107e4.webapp-5fs.pages.dev
+- **Latest Deployment**: https://9ffade68.webapp-5fs.pages.dev
 - **GitHub Repository**: https://github.com/amper8and/engagement_planner
 
 ## Technology Stack
@@ -208,8 +208,16 @@ webapp/
 - ✅ Beautiful UI with Tailwind CSS
 - ✅ **Fixed**: Multiple plan creation bug (event listener duplication)
 - ✅ **Fixed**: Cursor jumping when typing (focus/selection preservation)
+- ✅ **Fixed**: Step cards alignment and auto-scroll on focus
 
 ## Recent Updates
+
+### February 23, 2026 - UI/UX Polish Release
+- **Fixed**: Step cards now top-aligned for professional appearance (was center-aligned)
+- **Fixed**: Inputs off-screen now auto-scroll into view when focused
+- **Implementation**: Changed flex alignment from `items-center` to `items-start`
+- **Implementation**: Added smooth scrollIntoView on focus with event delegation
+- **Result**: Cleaner card layout and better editing workflow for multi-step plans
 
 ### February 23, 2026 - UX Improvement Release
 - **Fixed**: Cursor jumping/loss of focus when typing in plan title and input fields
