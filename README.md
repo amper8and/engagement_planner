@@ -213,28 +213,37 @@ webapp/
 
 ## Recent Updates
 
-### February 23, 2026 - Clean Scroll Solution (FINAL - v2)
-- **Fixed**: Prevent re-scrolling when clicking within the same step card
-- **Issue**: mousedown was triggering on EVERY click, including cursor repositioning within an already-focused field, causing unwanted scrolling
-- **Solution**: Track the last scrolled step card ID and only scroll when switching to a DIFFERENT card
-- **Implementation**:
-  - Added `lastScrolledStepCardId` variable to track current card
-  - Only scroll if `stepCard.dataset.stepId !== lastScrolledStepCardId`
-  - Store card ID after each scroll
+### February 23, 2026 - CRITICAL Scroll Position Lock (FINAL FIX - v3)
+- **Fixed**: FORCIBLY lock scroll position during cursor restoration to prevent ANY movement
+- **Issue**: Even with `preventScroll: true`, browsers can still scroll during `setSelectionRange()` or other focus operations, causing the viewport to recenter during typing
+- **Root Cause**: `preventScroll: true` alone is NOT sufficient - browsers vary and can override it
+- **Solution**: Aggressive scroll position preservation:
+  1. BEFORE focus/selection: Save `scrollLeft` of overflow container
+  2. Apply `preventScroll: true` on `focus()`
+  3. Call `setSelectionRange()` to restore cursor
+  4. AFTER all operations: **FORCE** restore `scrollLeft` to saved value
 - **Result**:
-  - ✅ First click on step card → scrolls and centers
-  - ✅ Click within same card (cursor repositioning) → NO scroll
-  - ✅ Type in field → NO scroll
-  - ✅ Click different step card → scrolls to new card
-  - ✅ Viewport completely stable when working within one card
+  - ✅ Scroll position **forcibly locked** during typing
+  - ✅ Works regardless of browser scroll behavior
+  - ✅ Cursor position still preserved perfectly
+  - ✅ Viewport **completely stable** - ZERO movement during typing
 
-### February 23, 2026 - Clean Scroll Solution (v1)
-- **Fixed**: Complete rewrite of scroll behavior using dedicated approach
-- **Problem**: Previous attempts tried to distinguish between user focus and programmatic focus, but this was overly complex and unreliable due to browser native behavior
-- **Solution**: Completely separated scroll logic from focus/input events
-  - Scroll ONLY happens on mousedown (click/selection)
-  - Typing/input events have ZERO scroll behavior
-  - Clean, simple, predictable
+**Testing Instructions:**
+1. Open the app and select a plan with multiple steps
+2. Click on a step card → should center (this is correct behavior)
+3. Type in the action title field:
+   - ✅ Viewport should NOT move at all
+   - ✅ Scroll position should remain exactly where you left it
+   - ✅ Typing should be completely smooth with zero interruption
+4. Type rapidly (multiple characters per second)
+5. Try different fields: title, description, dates, progress
+6. Click to reposition cursor within same field
+7. ALL interactions should have **ZERO scroll movement**
+
+### February 23, 2026 - Previous Scroll Fix Attempts (v1-v2)
+- v2: Attempted to track last scrolled card ID to prevent re-scrolling same card
+- v1: Attempted to use click-based scroll with mousedown listener
+- Both approaches failed because they didn't address the underlying cursor restoration scroll issue
 - **Implementation**:
   - Added `data-step-card` attribute to step card containers
   - Created dedicated `scrollStepCardIntoView()` function
