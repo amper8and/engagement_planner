@@ -213,26 +213,24 @@ webapp/
 
 ## Recent Updates
 
-### February 23, 2026 - SYSTEMATIC Scroll Lock for ALL Three Text Fields (v5 - FINAL)
-- **Fixed**: Systematic implementation ensuring ALL THREE text fields behave identically
-- **The Three Fields**:
-  1. **Action Title** (`data-field="actionTitle"`)
-  2. **Action Description** (`data-field="actionDescription"`)
-  3. **Action Review** (`data-field="review"`) - shown when step status is "Concluded"
-- **Systematic Approach**: ALL three fields use the exact same scroll lock logic:
-  - Same scroll container detection (with fallback)
-  - Same `preventScroll: true` on focus
-  - Same cursor restoration with `setSelectionRange`
-  - Same scroll position save/restore
-- **Double Enforcement**: Two-layer protection against async scroll:
-  1. First enforcement: Immediately after `setSelectionRange`
-  2. Second enforcement: `setTimeout(..., 0)` to catch async browser scrolling
-- **Result**:
-  - ✅ **Action Title** - NO recenter during typing
-  - ✅ **Action Description** - NO recenter during typing
-  - ✅ **Action Review** - NO recenter during typing
-  - ✅ All three fields treated identically with systematic code
-  - ✅ Double enforcement catches any async scroll attempts
+### February 23, 2026 - Active Card Always Visible (v6 - FINAL CORRECT FIX)
+- **Fixed**: Active card now stays consistently centered and visible during all typing
+- **Issue**: When typing in cards like "Follow up", the card would be positioned off-screen so users couldn't see what they were typing
+- **Root Cause**: Previous approach tried to PRESERVE scroll position, which meant cards that started off-screen stayed off-screen during typing
+- **The Misunderstanding**: "No recentering" was interpreted as "preserve scroll position" but actually means "keep active card centered and visible"
+- **Correct Solution**: After cursor restoration, **ALWAYS center the active card**
+  - Removed: savedScrollLeft save/restore logic
+  - Removed: Double enforcement attempts
+  - Added: `stepCard.scrollIntoView()` after cursor restoration
+  - Uses `behavior: 'auto'` for instant positioning (no animation)
+  - Uses `inline: 'center'` to keep card in viewport center
+- **Result - CONSISTENT BEHAVIOR**:
+  - ✅ Click any card → centers immediately
+  - ✅ Type in any field → card stays centered and visible
+  - ✅ Active card is ALWAYS on screen during typing
+  - ✅ User can always see what they're typing
+  - ✅ Consistent positioning - same center point every time
+  - ✅ No cards positioned off-screen during interaction
 
 ### February 23, 2026 - CRITICAL Scroll Position Lock (v3)
 - **Fixed**: FORCIBLY lock scroll position during cursor restoration to prevent ANY movement
@@ -240,20 +238,17 @@ webapp/
 - **Note**: This version only worked for title field, extended in v4 above
 
 **Testing Instructions:**
-1. Open the app and select a plan with multiple steps
-2. Click on a step card → should center (this is correct behavior)
-3. **Test Action Title field**:
-   - Type: "Testing scroll behavior in title"
-   - ✅ Viewport should NOT move at all
-4. **Test Action Description textarea**:
-   - Type a paragraph: "This is a test of the action description field..."
-   - ✅ Viewport should NOT move at all
-5. **Test Action Review textarea** (need to set step status to "Concluded" first):
-   - Change status dropdown to "Concluded"
-   - Review field appears below
-   - Type: "Testing the review field..."
-   - ✅ Viewport should NOT move at all
-6. **All three fields must behave identically** - NO scroll movement during typing
+1. Open the app and select a plan with multiple steps (e.g., "Example Engagement Plan")
+2. **Test consistent centering**:
+   - Click on the first step card (e.g., "Kickoff call") → should center
+   - Type something → card stays centered and visible
+   - Click on a different card (e.g., "Follow up meeting") → should center
+   - Type "123" → card stays centered and visible, you can see "123"
+3. **Test all three text fields** (all should keep card centered):
+   - Type in Action Title → card stays centered
+   - Type in Action Description → card stays centered
+   - Change status to "Concluded", type in Review → card stays centered
+4. **Key validation**: At NO point should an active card be off-screen where you can't see what you're typing
 
 ### February 23, 2026 - Previous Scroll Fix Attempts (v1-v2)
 - v2: Attempted to track last scrolled card ID to prevent re-scrolling same card
