@@ -213,7 +213,22 @@ webapp/
 
 ## Recent Updates
 
-### February 23, 2026 - Clean Scroll Solution (FINAL)
+### February 23, 2026 - Clean Scroll Solution (FINAL - v2)
+- **Fixed**: Prevent re-scrolling when clicking within the same step card
+- **Issue**: mousedown was triggering on EVERY click, including cursor repositioning within an already-focused field, causing unwanted scrolling
+- **Solution**: Track the last scrolled step card ID and only scroll when switching to a DIFFERENT card
+- **Implementation**:
+  - Added `lastScrolledStepCardId` variable to track current card
+  - Only scroll if `stepCard.dataset.stepId !== lastScrolledStepCardId`
+  - Store card ID after each scroll
+- **Result**:
+  - ✅ First click on step card → scrolls and centers
+  - ✅ Click within same card (cursor repositioning) → NO scroll
+  - ✅ Type in field → NO scroll
+  - ✅ Click different step card → scrolls to new card
+  - ✅ Viewport completely stable when working within one card
+
+### February 23, 2026 - Clean Scroll Solution (v1)
 - **Fixed**: Complete rewrite of scroll behavior using dedicated approach
 - **Problem**: Previous attempts tried to distinguish between user focus and programmatic focus, but this was overly complex and unreliable due to browser native behavior
 - **Solution**: Completely separated scroll logic from focus/input events
