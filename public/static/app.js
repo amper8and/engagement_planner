@@ -826,7 +826,18 @@ function render() {
       
       if (targetElement) {
         // CRITICAL: Save scroll position BEFORE any focus/selection operations
-        const scrollContainer = targetElement.closest('.overflow-x-auto');
+        // Find the horizontal scroll container - it's the parent with overflow-x-auto class
+        // The step card is inside this container, so we need to traverse up from the target
+        let scrollContainer = targetElement.closest('.overflow-x-auto');
+        
+        // If not found directly, try finding it from the step card
+        if (!scrollContainer) {
+          const stepCard = targetElement.closest('[data-step-card]');
+          if (stepCard) {
+            scrollContainer = stepCard.parentElement;
+          }
+        }
+        
         const savedScrollLeft = scrollContainer ? scrollContainer.scrollLeft : 0;
         
         // Use preventScroll to stop ALL scroll behavior during focus restoration
