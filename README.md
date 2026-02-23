@@ -209,23 +209,31 @@ webapp/
 - ✅ **Fixed**: Multiple plan creation bug (event listener duplication)
 - ✅ **Fixed**: Cursor jumping when typing (focus/selection preservation)
 - ✅ **Fixed**: Step cards alignment (top-aligned) and auto-scroll on focus
-- ✅ **Fixed**: Constant recentering while typing (programmatic focus detection)
+- ✅ **Fixed**: Constant recentering while typing (custom scrollIntoView prevention)
+- ✅ **Fixed**: Browser native scroll during typing (preventScroll: true)
 
 ## Recent Updates
 
-### February 23, 2026 - Critical Focus Fix Release
-- **Fixed**: Constant recentering while typing in any input field (FINAL FIX)
-- **Root Cause**: Focus event listener was triggering scrollIntoView on EVERY focus event, including programmatic focus() calls during cursor restoration after each keystroke
-- **Solution**: Added `isRestoringFocus` flag to distinguish between user-initiated focus (click/tab) and programmatic focus (cursor restoration)
+### February 23, 2026 - Browser Native Scroll Fix (COMPLETE)
+- **Fixed**: "Centers off the page" issue during typing (browser native scroll behavior)
+- **Root Cause**: Even with `isRestoringFocus` flag preventing custom scrollIntoView, the browser's NATIVE `focus()` method was automatically scrolling the element into view during cursor restoration
+- **Solution**: Use `focus({ preventScroll: true })` instead of `focus()` during programmatic focus restoration
 - **Implementation**: 
-  - Set flag before programmatic focus() in cursor restoration
-  - Check flag in focus event listener to skip scrollIntoView when true
-  - Clear flag after 50ms delay
+  - Changed `targetElement.focus()` to `targetElement.focus({ preventScroll: true })` on line 830
+  - This completely disables ALL scroll behavior (both custom and browser native) during typing
+  - Combined with `isRestoringFocus` flag for double protection
 - **Result**: 
-  - ✅ Click or tab into field → scrolls into view smoothly
-  - ✅ Type in field → NO scrolling, completely stable
+  - ✅ Click or tab into field → scrolls into view smoothly (user-initiated)
+  - ✅ Type in field → viewport stays COMPLETELY STABLE (no scroll at all)
   - ✅ Cursor position preserved perfectly
   - ✅ Works for all input types (text, date, textarea, number, range)
+  - ✅ No recentering, no jumping, no viewport movement while typing
+
+### February 23, 2026 - Critical Focus Fix Release
+- **Fixed**: Constant recentering while typing - prevented custom scrollIntoView during programmatic focus
+- **Root Cause**: Focus event listener was triggering scrollIntoView on EVERY focus event
+- **Solution**: Added `isRestoringFocus` flag to distinguish between user-initiated and programmatic focus
+- **Result**: Prevented custom scrollIntoView, but browser native scroll still occurred (see fix above)
 
 ### February 23, 2026 - UI/UX Polish Release
 - **Fixed**: Step cards now top-aligned for professional appearance (was center-aligned)
