@@ -21,7 +21,7 @@ A comprehensive project engagement planning and monitoring tool built with Hono 
 ## URLs
 
 - **Production**: https://webapp-5fs.pages.dev
-- **Latest Deployment**: https://11b053c8.webapp-5fs.pages.dev
+- **Latest Deployment**: https://f7bad572.webapp-5fs.pages.dev
 - **GitHub Repository**: https://github.com/amper8and/engagement_planner
 
 ## Technology Stack
@@ -206,6 +206,28 @@ webapp/
 - ✅ Full CRUD API
 - ✅ Persistent data storage
 - ✅ Beautiful UI with Tailwind CSS
+- ✅ **Fixed**: Multiple plan creation bug (event listener duplication)
+
+## Recent Updates
+
+### February 23, 2026 - Bug Fix Release
+- **Fixed**: Multiple plans being created when clicking "New" button once
+- **Root Cause**: Event listeners were being attached on every render, causing duplicates
+- **Solution**: Implemented guard flag and moved event listener attachment to startup only
+- **Added**: Comprehensive regression prevention strategy document (see `REGRESSION_PREVENTION.md`)
+
+## Quality Assurance
+
+This project includes a comprehensive regression prevention strategy. Before making any changes:
+1. **Read** `REGRESSION_PREVENTION.md` for the complete checklist
+2. **Test** all critical paths before deployment
+3. **Verify** the fix locally before pushing to production
+
+Key principles:
+- Event listeners must only be attached once at startup
+- Use event delegation pattern for dynamic content
+- Test ALL modules after ANY change
+- Complete the pre-deployment checklist
 
 ## Future Enhancements
 
