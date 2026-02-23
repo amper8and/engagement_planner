@@ -556,6 +556,17 @@ function render() {
   const plan = appState.getActivePlan();
   const filteredPlans = appState.getFilteredPlans();
   
+  // Preserve focused element and cursor position before re-render
+  const activeElement = document.activeElement;
+  const isInputField = activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA');
+  const preserveState = isInputField ? {
+    field: activeElement.dataset.field,
+    stepId: activeElement.dataset.stepId,
+    selectionStart: activeElement.selectionStart,
+    selectionEnd: activeElement.selectionEnd,
+    value: activeElement.value
+  } : null;
+  
   if (!plan) {
     document.getElementById('root').innerHTML = `
       <div class="min-h-screen bg-slate-50 flex items-center justify-center p-6">
@@ -796,6 +807,32 @@ function render() {
       </div>
     </div>
   `;
+
+  // Restore focused element and cursor position after re-render
+  if (preserveState) {
+    // Use requestAnimationFrame to ensure DOM has updated
+    requestAnimationFrame(() => {
+      let targetElement;
+      
+      if (preserveState.stepId) {
+        // Find input by field and stepId
+        targetElement = document.querySelector(
+          `[data-field="${preserveState.field}"][data-step-id="${preserveState.stepId}"]`
+        );
+      } else {
+        // Find input by field only (for plan-level fields)
+        targetElement = document.querySelector(`[data-field="${preserveState.field}"]`);
+      }
+      
+      if (targetElement) {
+        targetElement.focus();
+        // Restore cursor position
+        if (targetElement.setSelectionRange && preserveState.selectionStart !== null) {
+          targetElement.setSelectionRange(preserveState.selectionStart, preserveState.selectionEnd);
+        }
+      }
+    });
+  }
 
   // Note: Event listeners are attached once at startup, not on each render
 }
