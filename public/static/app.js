@@ -827,7 +827,8 @@ function render() {
       if (targetElement) {
         // Set flag to prevent scroll during programmatic focus restoration
         isRestoringFocus = true;
-        targetElement.focus();
+        // Use preventScroll to stop browser's native scroll behavior during focus
+        targetElement.focus({ preventScroll: true });
         // Restore cursor position
         if (targetElement.setSelectionRange && preserveState.selectionStart !== null) {
           targetElement.setSelectionRange(preserveState.selectionStart, preserveState.selectionEnd);
