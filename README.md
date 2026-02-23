@@ -213,22 +213,26 @@ webapp/
 
 ## Recent Updates
 
-### February 23, 2026 - CRITICAL Scroll Position Lock Extended to ALL Fields (v4)
-- **Fixed**: Extended scroll position lock to work for ALL fields in engagement cards
-- **Issue**: Previous fix (v3) only worked for action title field, but textarea (description) and other fields were still causing recentering
-- **Root Cause**: Scroll container lookup was too simplistic - only worked for direct descendants, not nested fields like textarea
-- **Solution**: More robust scroll container detection with fallback:
-  1. First try: `closest('.overflow-x-auto')` for direct fields
-  2. Fallback: Find step card, then get its `parentElement` (the scroll container)
-  3. This ensures we ALWAYS find the container regardless of DOM nesting
+### February 23, 2026 - SYSTEMATIC Scroll Lock for ALL Three Text Fields (v5 - FINAL)
+- **Fixed**: Systematic implementation ensuring ALL THREE text fields behave identically
+- **The Three Fields**:
+  1. **Action Title** (`data-field="actionTitle"`)
+  2. **Action Description** (`data-field="actionDescription"`)
+  3. **Action Review** (`data-field="review"`) - shown when step status is "Concluded"
+- **Systematic Approach**: ALL three fields use the exact same scroll lock logic:
+  - Same scroll container detection (with fallback)
+  - Same `preventScroll: true` on focus
+  - Same cursor restoration with `setSelectionRange`
+  - Same scroll position save/restore
+- **Double Enforcement**: Two-layer protection against async scroll:
+  1. First enforcement: Immediately after `setSelectionRange`
+  2. Second enforcement: `setTimeout(..., 0)` to catch async browser scrolling
 - **Result**:
-  - ✅ Action Title field - viewport locked
-  - ✅ Action Description textarea - viewport locked
-  - ✅ Date inputs - viewport locked
-  - ✅ Status select dropdown - viewport locked
-  - ✅ Progress slider/inputs - viewport locked
-  - ✅ Success probability inputs - viewport locked
-  - ✅ **ALL fields** now have stable viewport during typing
+  - ✅ **Action Title** - NO recenter during typing
+  - ✅ **Action Description** - NO recenter during typing
+  - ✅ **Action Review** - NO recenter during typing
+  - ✅ All three fields treated identically with systematic code
+  - ✅ Double enforcement catches any async scroll attempts
 
 ### February 23, 2026 - CRITICAL Scroll Position Lock (v3)
 - **Fixed**: FORCIBLY lock scroll position during cursor restoration to prevent ANY movement
@@ -238,14 +242,18 @@ webapp/
 **Testing Instructions:**
 1. Open the app and select a plan with multiple steps
 2. Click on a step card → should center (this is correct behavior)
-3. Type in the action title field:
+3. **Test Action Title field**:
+   - Type: "Testing scroll behavior in title"
    - ✅ Viewport should NOT move at all
-   - ✅ Scroll position should remain exactly where you left it
-   - ✅ Typing should be completely smooth with zero interruption
-4. Type rapidly (multiple characters per second)
-5. Try different fields: title, description, dates, progress
-6. Click to reposition cursor within same field
-7. ALL interactions should have **ZERO scroll movement**
+4. **Test Action Description textarea**:
+   - Type a paragraph: "This is a test of the action description field..."
+   - ✅ Viewport should NOT move at all
+5. **Test Action Review textarea** (need to set step status to "Concluded" first):
+   - Change status dropdown to "Concluded"
+   - Review field appears below
+   - Type: "Testing the review field..."
+   - ✅ Viewport should NOT move at all
+6. **All three fields must behave identically** - NO scroll movement during typing
 
 ### February 23, 2026 - Previous Scroll Fix Attempts (v1-v2)
 - v2: Attempted to track last scrolled card ID to prevent re-scrolling same card
