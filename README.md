@@ -213,20 +213,27 @@ webapp/
 
 ## Recent Updates
 
-### February 23, 2026 - CRITICAL Scroll Position Lock (FINAL FIX - v3)
-- **Fixed**: FORCIBLY lock scroll position during cursor restoration to prevent ANY movement
-- **Issue**: Even with `preventScroll: true`, browsers can still scroll during `setSelectionRange()` or other focus operations, causing the viewport to recenter during typing
-- **Root Cause**: `preventScroll: true` alone is NOT sufficient - browsers vary and can override it
-- **Solution**: Aggressive scroll position preservation:
-  1. BEFORE focus/selection: Save `scrollLeft` of overflow container
-  2. Apply `preventScroll: true` on `focus()`
-  3. Call `setSelectionRange()` to restore cursor
-  4. AFTER all operations: **FORCE** restore `scrollLeft` to saved value
+### February 23, 2026 - CRITICAL Scroll Position Lock Extended to ALL Fields (v4)
+- **Fixed**: Extended scroll position lock to work for ALL fields in engagement cards
+- **Issue**: Previous fix (v3) only worked for action title field, but textarea (description) and other fields were still causing recentering
+- **Root Cause**: Scroll container lookup was too simplistic - only worked for direct descendants, not nested fields like textarea
+- **Solution**: More robust scroll container detection with fallback:
+  1. First try: `closest('.overflow-x-auto')` for direct fields
+  2. Fallback: Find step card, then get its `parentElement` (the scroll container)
+  3. This ensures we ALWAYS find the container regardless of DOM nesting
 - **Result**:
-  - ✅ Scroll position **forcibly locked** during typing
-  - ✅ Works regardless of browser scroll behavior
-  - ✅ Cursor position still preserved perfectly
-  - ✅ Viewport **completely stable** - ZERO movement during typing
+  - ✅ Action Title field - viewport locked
+  - ✅ Action Description textarea - viewport locked
+  - ✅ Date inputs - viewport locked
+  - ✅ Status select dropdown - viewport locked
+  - ✅ Progress slider/inputs - viewport locked
+  - ✅ Success probability inputs - viewport locked
+  - ✅ **ALL fields** now have stable viewport during typing
+
+### February 23, 2026 - CRITICAL Scroll Position Lock (v3)
+- **Fixed**: FORCIBLY lock scroll position during cursor restoration to prevent ANY movement
+- **Solution**: Aggressive scroll position preservation - save scrollLeft before, force restore after
+- **Note**: This version only worked for title field, extended in v4 above
 
 **Testing Instructions:**
 1. Open the app and select a plan with multiple steps
