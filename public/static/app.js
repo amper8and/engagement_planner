@@ -830,8 +830,8 @@ function render() {
         if (targetElement.setSelectionRange && preserveState.selectionStart !== null) {
           targetElement.setSelectionRange(preserveState.selectionStart, preserveState.selectionEnd);
         }
-        // Scroll into view horizontally if needed (for step cards)
-        targetElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        // Note: scrollIntoView is handled by focus event listener on initial focus only,
+        // not on every keystroke during cursor restoration
       }
     });
   }
