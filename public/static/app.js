@@ -615,6 +615,10 @@ function render() {
           <div class="px-2 pb-4">
             ${filteredPlans.map(p => {
               const isActive = p.id === appState.activePlanId;
+              // Calculate current progress for this plan
+              const concluded = p.steps.filter(s => s.status === STATUS.CONCLUDED);
+              const progress = concluded.length ? Math.max(...concluded.map(s => s.progress)) : 0;
+              
               return `
                 <div
                   class="mx-2 mb-2 rounded-2xl border p-3 cursor-pointer ${
@@ -626,9 +630,14 @@ function render() {
                   data-plan-id="${p.id}"
                 >
                   <div class="flex items-start justify-between gap-2">
-                    <div class="min-w-0">
-                      <div class="text-sm font-semibold truncate ${isActive ? "text-white" : "text-slate-900"}">
-                        ${p.title}
+                    <div class="min-w-0 flex-1">
+                      <div class="flex items-center gap-2">
+                        <div class="text-sm font-semibold truncate ${isActive ? "text-white" : "text-slate-900"}">
+                          ${p.title}
+                        </div>
+                        <div class="text-xs font-medium shrink-0 ${isActive ? "text-slate-300" : "text-slate-600"}">
+                          ${progress}%
+                        </div>
                       </div>
                       <div class="text-xs mt-1 ${isActive ? "text-slate-200" : "text-slate-500"}">
                         ${p.startDate} → ${p.endDate}
