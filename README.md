@@ -208,17 +208,31 @@ webapp/
 - ✅ Beautiful UI with Tailwind CSS
 - ✅ **Fixed**: Multiple plan creation bug (event listener duplication)
 - ✅ **Fixed**: Cursor jumping when typing (focus/selection preservation)
-- ✅ **Fixed**: Step cards alignment and auto-scroll on focus
+- ✅ **Fixed**: Step cards alignment (top-aligned) and auto-scroll on focus
+- ✅ **Fixed**: Constant recentering while typing (programmatic focus detection)
 
 ## Recent Updates
 
-### February 23, 2026 - UI/UX Polish Release (Refined)
+### February 23, 2026 - Critical Focus Fix Release
+- **Fixed**: Constant recentering while typing in any input field (FINAL FIX)
+- **Root Cause**: Focus event listener was triggering scrollIntoView on EVERY focus event, including programmatic focus() calls during cursor restoration after each keystroke
+- **Solution**: Added `isRestoringFocus` flag to distinguish between user-initiated focus (click/tab) and programmatic focus (cursor restoration)
+- **Implementation**: 
+  - Set flag before programmatic focus() in cursor restoration
+  - Check flag in focus event listener to skip scrollIntoView when true
+  - Clear flag after 50ms delay
+- **Result**: 
+  - ✅ Click or tab into field → scrolls into view smoothly
+  - ✅ Type in field → NO scrolling, completely stable
+  - ✅ Cursor position preserved perfectly
+  - ✅ Works for all input types (text, date, textarea, number, range)
+
+### February 23, 2026 - UI/UX Polish Release
 - **Fixed**: Step cards now top-aligned for professional appearance (was center-aligned)
-- **Fixed**: Inputs off-screen auto-scroll into view ONLY on initial focus (not during typing)
-- **Refinement**: Removed scrollIntoView from keystroke events - now only triggers on click/tab
+- **Fixed**: Inputs off-screen auto-scroll into view on initial focus
 - **Implementation**: Changed flex alignment from `items-center` to `items-start`
-- **Implementation**: scrollIntoView only in focus event listener, not in cursor restoration
-- **Result**: Cleaner card layout, smooth typing without scroll interruption, smart initial scroll
+- **Implementation**: Added focus event listener with scrollIntoView
+- **Result**: Cleaner card layout, smart initial scroll
 
 ### February 23, 2026 - UX Improvement Release
 - **Fixed**: Cursor jumping/loss of focus when typing in plan title and input fields
