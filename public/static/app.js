@@ -841,6 +841,9 @@ function render() {
 // Global flag to ensure event listeners are only attached once
 let eventListenersAttached = false;
 
+// Track the last scrolled step card to prevent re-scrolling during typing
+let lastScrolledStepCardId = null;
+
 // Function to scroll a step card into view (centers horizontally)
 function scrollStepCardIntoView(stepCardElement) {
   if (stepCardElement && stepCardElement.dataset.stepCard !== undefined) {
@@ -849,6 +852,8 @@ function scrollStepCardIntoView(stepCardElement) {
       block: 'nearest', 
       inline: 'center' 
     });
+    // Track which card we just scrolled to
+    lastScrolledStepCardId = stepCardElement.dataset.stepId;
   }
 }
 
@@ -952,15 +957,19 @@ function attachEventListeners() {
   });
 
   // Handle clicks on step cards or input fields - scroll card into view
+  // Only scroll if clicking on a DIFFERENT step card than the last one scrolled
   root.addEventListener('mousedown', (e) => {
     // Find the closest step card (whether clicking on card itself or an input inside it)
     const stepCard = e.target.closest('[data-step-card]');
     
     if (stepCard) {
-      // Use setTimeout to let the click complete first, then scroll
-      setTimeout(() => {
-        scrollStepCardIntoView(stepCard);
-      }, 10);
+      // Only scroll if this is a different card than the last one we scrolled to
+      if (stepCard.dataset.stepId !== lastScrolledStepCardId) {
+        // Use setTimeout to let the click complete first, then scroll
+        setTimeout(() => {
+          scrollStepCardIntoView(stepCard);
+        }, 10);
+      }
     }
   });
 }
