@@ -760,7 +760,7 @@ function render() {
               Steps flow left → right. Use <span class="font-semibold">+</span> between cards to insert as many intermediate steps as needed.
             </div>
 
-            <div class="flex items-center gap-4 overflow-x-auto pb-6">
+            <div class="flex items-start gap-4 overflow-x-auto pb-6">
               ${plan.steps.map((step, idx) => {
                 const isRemovable = step.type === "intermediate";
                 const canMoveLeft = step.type === "intermediate" && idx > 1;
@@ -830,6 +830,8 @@ function render() {
         if (targetElement.setSelectionRange && preserveState.selectionStart !== null) {
           targetElement.setSelectionRange(preserveState.selectionStart, preserveState.selectionEnd);
         }
+        // Scroll into view horizontally if needed (for step cards)
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       }
     });
   }
@@ -938,6 +940,20 @@ function attachEventListeners() {
       }
     }
   });
+
+  // Handle focus events - scroll input into view when focused (using event delegation)
+  root.addEventListener('focus', (e) => {
+    const target = e.target;
+    const isInputField = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT';
+    
+    if (isInputField && target.dataset.field) {
+      // Scroll element into view horizontally, centered in viewport
+      // Use setTimeout to ensure any browser autoscroll happens first
+      setTimeout(() => {
+        target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }, 100);
+    }
+  }, true); // Use capture phase to catch focus events
 }
 
 // Initialize app
