@@ -629,32 +629,35 @@ function render() {
                   data-action="selectPlan"
                   data-plan-id="${p.id}"
                 >
-                  <div class="flex items-start justify-between gap-2">
-                    <div class="min-w-0 flex-1">
-                      <div class="flex items-center gap-2">
-                        <div class="text-sm font-semibold truncate ${isActive ? "text-white" : "text-slate-900"}">
-                          ${p.title}
-                        </div>
-                        <div class="text-xs font-medium shrink-0 ${isActive ? "text-slate-300" : "text-slate-600"}">
-                          ${progress}%
-                        </div>
+                  <div class="flex items-center justify-between gap-3">
+                    <div class="min-w-0 flex-1 text-center">
+                      <div class="text-sm font-semibold truncate ${isActive ? "text-white" : "text-slate-900"}">
+                        ${p.title}
                       </div>
                       <div class="text-xs mt-1 ${isActive ? "text-slate-200" : "text-slate-500"}">
                         ${p.startDate} → ${p.endDate}
                       </div>
                     </div>
-                    <button
-                      class="${BTN} rounded-xl border px-2 py-1 text-[11px] ${
-                        isActive
-                          ? "border-white/30 hover:bg-white/10 active:bg-white/15"
-                          : "hover:bg-slate-50 active:bg-slate-100"
-                      }"
-                      data-action="deletePlan"
-                      data-plan-id="${p.id}"
-                      title="Delete plan"
-                    >
-                      Delete
-                    </button>
+                    <div class="flex items-center gap-2 shrink-0">
+                      <div class="text-2xl font-bold ${isActive ? "text-white" : "text-slate-900"}">
+                        ${progress}%
+                      </div>
+                      <button
+                        class="${BTN} rounded-xl border p-2 ${
+                          isActive
+                            ? "border-white/30 hover:bg-white/10 active:bg-white/15"
+                            : "hover:bg-slate-50 active:bg-slate-100"
+                        }"
+                        data-action="deletePlan"
+                        data-plan-id="${p.id}"
+                        title="Delete plan"
+                        onclick="event.stopPropagation()"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
               `;
