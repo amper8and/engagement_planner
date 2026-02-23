@@ -825,22 +825,17 @@ function render() {
       }
       
       if (targetElement) {
-        // CRITICAL: Save scroll position BEFORE any focus/selection operations
-        // Find the horizontal scroll container - it's the parent with overflow-x-auto class
-        // The step card is inside this container, so we need to traverse up from the target
+        // CRITICAL: For step cards, we need to ensure the card stays centered
+        // Find the step card and the scroll container
+        const stepCard = targetElement.closest('[data-step-card]');
         let scrollContainer = targetElement.closest('.overflow-x-auto');
         
         // If not found directly, try finding it from the step card
-        if (!scrollContainer) {
-          const stepCard = targetElement.closest('[data-step-card]');
-          if (stepCard) {
-            scrollContainer = stepCard.parentElement;
-          }
+        if (!scrollContainer && stepCard) {
+          scrollContainer = stepCard.parentElement;
         }
         
-        const savedScrollLeft = scrollContainer ? scrollContainer.scrollLeft : 0;
-        
-        // Use preventScroll to stop ALL scroll behavior during focus restoration
+        // Use preventScroll to stop browser's native scroll behavior during focus restoration
         targetElement.focus({ preventScroll: true });
         
         // Restore cursor position
@@ -848,17 +843,16 @@ function render() {
           targetElement.setSelectionRange(preserveState.selectionStart, preserveState.selectionEnd);
         }
         
-        // CRITICAL: Force restore scroll position IMMEDIATELY after focus/selection
-        if (scrollContainer) {
-          scrollContainer.scrollLeft = savedScrollLeft;
+        // CRITICAL: After restoring focus/cursor, ensure the step card is centered
+        // This ensures typing is always visible on screen
+        if (stepCard && scrollContainer) {
+          // Center the card in the viewport
+          stepCard.scrollIntoView({ 
+            behavior: 'auto',  // Use 'auto' for instant, no animation during typing
+            block: 'nearest', 
+            inline: 'center' 
+          });
         }
-        
-        // DOUBLE CHECK: Force restore again after a tiny delay to catch any async scrolling
-        setTimeout(() => {
-          if (scrollContainer) {
-            scrollContainer.scrollLeft = savedScrollLeft;
-          }
-        }, 0);
       }
     });
   }
