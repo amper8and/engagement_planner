@@ -825,13 +825,15 @@ function render() {
       }
       
       if (targetElement) {
+        // Set flag to prevent scroll during programmatic focus restoration
+        isRestoringFocus = true;
         targetElement.focus();
         // Restore cursor position
         if (targetElement.setSelectionRange && preserveState.selectionStart !== null) {
           targetElement.setSelectionRange(preserveState.selectionStart, preserveState.selectionEnd);
         }
-        // Note: scrollIntoView is handled by focus event listener on initial focus only,
-        // not on every keystroke during cursor restoration
+        // Clear flag after a short delay
+        setTimeout(() => { isRestoringFocus = false; }, 50);
       }
     });
   }
@@ -841,6 +843,9 @@ function render() {
 
 // Global flag to ensure event listeners are only attached once
 let eventListenersAttached = false;
+
+// Flag to prevent scrollIntoView during programmatic focus restoration
+let isRestoringFocus = false;
 
 function attachEventListeners() {
   // Prevent duplicate event listeners
@@ -946,7 +951,8 @@ function attachEventListeners() {
     const target = e.target;
     const isInputField = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT';
     
-    if (isInputField && target.dataset.field) {
+    // Only scroll if this is a user-initiated focus, not programmatic focus restoration
+    if (isInputField && target.dataset.field && !isRestoringFocus) {
       // Scroll element into view horizontally, centered in viewport
       // Use setTimeout to ensure any browser autoscroll happens first
       setTimeout(() => {
