@@ -848,10 +848,17 @@ function render() {
           targetElement.setSelectionRange(preserveState.selectionStart, preserveState.selectionEnd);
         }
         
-        // CRITICAL: Force restore scroll position after focus/selection
+        // CRITICAL: Force restore scroll position IMMEDIATELY after focus/selection
         if (scrollContainer) {
           scrollContainer.scrollLeft = savedScrollLeft;
         }
+        
+        // DOUBLE CHECK: Force restore again after a tiny delay to catch any async scrolling
+        setTimeout(() => {
+          if (scrollContainer) {
+            scrollContainer.scrollLeft = savedScrollLeft;
+          }
+        }, 0);
       }
     });
   }
