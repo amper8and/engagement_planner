@@ -348,6 +348,19 @@ class AppState {
   }
 
   async deletePlan(planId) {
+    // Get the plan to show its title in the confirmation
+    const plan = this.plans.find(p => p.id === planId);
+    if (!plan) return;
+
+    // Show confirmation dialog before deleting
+    const planTitle = plan.title || 'Untitled Plan';
+    const confirmMessage = `Are you sure you want to delete "${planTitle}"?\n\nThis will permanently remove the plan and all its steps. This action cannot be undone.`;
+    
+    if (!confirm(confirmMessage)) {
+      return; // User cancelled, do nothing
+    }
+
+    // User confirmed, proceed with deletion
     await this.deletePlanById(planId);
     this.plans = this.plans.filter(p => p.id !== planId);
     if (this.activePlanId === planId) {
