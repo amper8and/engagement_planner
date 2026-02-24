@@ -677,7 +677,7 @@ function render() {
 
         <!-- Sidebar Toggle Button -->
         <button
-          class="${BTN} fixed left-2 top-2 z-30 rounded-xl bg-white border shadow-lg p-2 hover:bg-slate-50 active:bg-slate-100 transition-all duration-300 ${appState.sidebarCollapsed ? '' : 'left-[328px]'}"
+          class="${BTN} fixed left-2 top-6 z-30 rounded-xl bg-white border shadow-lg p-2 hover:bg-slate-50 active:bg-slate-100 transition-all duration-300 ${appState.sidebarCollapsed ? '' : 'left-[328px]'}"
           data-action="toggleSidebar"
           title="${appState.sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}"
         >
@@ -694,8 +694,8 @@ function render() {
         <main class="flex-1 transition-all duration-300 ${appState.sidebarCollapsed ? 'ml-0' : 'ml-[320px]'}">
           <!-- Header -->
           <div class="sticky top-0 z-10 bg-slate-50/90 backdrop-blur border-b">
-            <div class="p-5 flex flex-col gap-4">
-              <div class="flex items-start justify-between gap-4">
+            <div class="p-5 pl-16 flex flex-col gap-4">
+              <div class="flex items-center justify-between gap-4">
                 <div class="min-w-0 flex-1">
                   <input
                     class="w-full text-xl md:text-2xl font-semibold bg-transparent outline-none border-b border-transparent focus:border-slate-200"
