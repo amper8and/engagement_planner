@@ -21,7 +21,7 @@ A comprehensive project engagement planning and monitoring tool built with Hono 
 ## URLs
 
 - **Production**: https://webapp-5fs.pages.dev
-- **Latest Deployment**: https://6f27f7b8.webapp-5fs.pages.dev
+- **Latest Deployment**: https://2d6bad64.webapp-5fs.pages.dev
 - **GitHub Repository**: https://github.com/amper8and/engagement_planner
 
 ## Technology Stack
@@ -187,7 +187,7 @@ webapp/
 
 ✅ **Active** - Currently deployed and running on Cloudflare Pages
 
-**Last Deployed**: February 23, 2026
+**Last Deployed**: February 24, 2026
 
 **Database**: Cloudflare D1 `webapp-production` (ID: 3a16985e-be79-4aee-ab2c-63d705e89766)
 
@@ -215,6 +215,15 @@ webapp/
 - ✅ **Fixed**: Active card always centered and visible during typing
 
 ## Recent Updates
+
+### February 24, 2026 - Sidebar Toggle Button Alignment Fix
+- **Fixed**: Sidebar toggle button alignment to prevent overlap with header text
+- **Changes**:
+  - Button position: Moved from `top-2` to `top-6` for better vertical alignment
+  - Content padding: Added `pl-16` to main content area to create proper spacing
+  - Header alignment: Changed from `items-start` to `items-center` for consistent vertical centering
+- **Result**: Clean, professional header layout with no overlap between toggle button and "Engagement" heading
+- **Commit**: `0c4654d`
 
 ### February 23, 2026 - Collapsible Fixed Sidebar
 - **Added**: Sidebar is now fixed and doesn't scroll with main content
