@@ -270,8 +270,23 @@ class AppState {
     const plan = this.getActivePlan();
     if (!plan) return;
     
-    this.plans = this.plans.map(p => p.id === plan.id ? { ...p, ...patch } : p);
-    this.savePlan({ ...plan, ...patch });
+    const updatedPlan = { ...plan, ...patch };
+    
+    // If steps were updated, sync plan dates with initial and end step dates
+    if (patch.steps) {
+      const initialStep = updatedPlan.steps.find(s => s.type === 'initial');
+      const endStep = updatedPlan.steps.find(s => s.type === 'end');
+      
+      if (initialStep && initialStep.date) {
+        updatedPlan.startDate = initialStep.date;
+      }
+      if (endStep && endStep.date) {
+        updatedPlan.endDate = endStep.date;
+      }
+    }
+    
+    this.plans = this.plans.map(p => p.id === plan.id ? updatedPlan : p);
+    this.savePlan(updatedPlan);
     this.notify();
   }
 
@@ -283,6 +298,17 @@ class AppState {
       ...plan,
       steps: plan.steps.map(s => s.id === stepId ? { ...s, ...patch } : s)
     };
+    
+    // Sync plan dates with initial and end step dates
+    const initialStep = updatedPlan.steps.find(s => s.type === 'initial');
+    const endStep = updatedPlan.steps.find(s => s.type === 'end');
+    
+    if (initialStep && initialStep.date) {
+      updatedPlan.startDate = initialStep.date;
+    }
+    if (endStep && endStep.date) {
+      updatedPlan.endDate = endStep.date;
+    }
     
     this.plans = this.plans.map(p => p.id === plan.id ? updatedPlan : p);
     this.savePlan(updatedPlan);
