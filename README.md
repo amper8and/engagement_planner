@@ -21,7 +21,7 @@ A comprehensive project engagement planning and monitoring tool built with Hono 
 ## URLs
 
 - **Production**: https://webapp-5fs.pages.dev
-- **Latest Deployment**: https://2d6bad64.webapp-5fs.pages.dev
+- **Latest Deployment**: https://8f94ff10.webapp-5fs.pages.dev
 - **GitHub Repository**: https://github.com/amper8and/engagement_planner
 
 ## Technology Stack
@@ -215,6 +215,14 @@ webapp/
 - ✅ **Fixed**: Active card always centered and visible during typing
 
 ## Recent Updates
+
+### February 24, 2026 - Delete Confirmation Dialog
+- **Fixed**: Delete plan button now requires confirmation before deletion
+- **Issue**: Previously, clicking the trash icon would immediately delete the plan without warning
+- **Solution**: Added confirmation dialog that displays the plan title and warns about permanent data loss
+- **UX Improvement**: Prevents accidental deletion of engagement plans and their associated steps
+- **Safety**: Critical improvement to protect user data from unintentional removal
+- **Commit**: `23437d9`
 
 ### February 24, 2026 - Sidebar Toggle Button Alignment Fix
 - **Fixed**: Sidebar toggle button alignment to prevent overlap with header text
