@@ -21,7 +21,7 @@ A comprehensive project engagement planning and monitoring tool built with Hono 
 ## URLs
 
 - **Production**: https://webapp-5fs.pages.dev
-- **Latest Deployment**: https://652524d3.webapp-5fs.pages.dev
+- **Latest Deployment**: https://5733daa9.webapp-5fs.pages.dev
 - **GitHub Repository**: https://github.com/amper8and/engagement_planner
 
 ## Technology Stack
@@ -215,6 +215,18 @@ webapp/
 - ✅ **Fixed**: Active card always centered and visible during typing
 
 ## Recent Updates
+
+### February 24, 2026 - Auto-Sync Plan Dates with Step Dates
+- **Fixed**: Plan end date in sidebar now automatically matches the end step's date
+- **Issue**: Sidebar showed incorrect plan dates when step dates were modified
+- **Root Cause**: Changing step dates didn't update the plan's startDate/endDate fields
+- **Solution**: 
+  - Plan startDate automatically syncs with initial step date
+  - Plan endDate automatically syncs with end step date
+  - Sync happens on all step modifications (update, insert, remove, move)
+  - Sidebar cards now always show accurate date ranges
+- **Benefit**: No more date inconsistencies between sidebar and step cards
+- **Commit**: `f4b2eb1`
 
 ### February 24, 2026 - Delete Button Event Delegation Fix (CRITICAL)
 - **Fixed**: Delete button now works correctly with confirmation dialog
