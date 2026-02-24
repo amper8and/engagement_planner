@@ -21,7 +21,7 @@ A comprehensive project engagement planning and monitoring tool built with Hono 
 ## URLs
 
 - **Production**: https://webapp-5fs.pages.dev
-- **Latest Deployment**: https://8f94ff10.webapp-5fs.pages.dev
+- **Latest Deployment**: https://652524d3.webapp-5fs.pages.dev
 - **GitHub Repository**: https://github.com/amper8and/engagement_planner
 
 ## Technology Stack
@@ -216,13 +216,17 @@ webapp/
 
 ## Recent Updates
 
-### February 24, 2026 - Delete Confirmation Dialog
-- **Fixed**: Delete plan button now requires confirmation before deletion
-- **Issue**: Previously, clicking the trash icon would immediately delete the plan without warning
-- **Solution**: Added confirmation dialog that displays the plan title and warns about permanent data loss
-- **UX Improvement**: Prevents accidental deletion of engagement plans and their associated steps
-- **Safety**: Critical improvement to protect user data from unintentional removal
-- **Commit**: `23437d9`
+### February 24, 2026 - Delete Button Event Delegation Fix (CRITICAL)
+- **Fixed**: Delete button now works correctly with confirmation dialog
+- **Root Cause**: Inline `onclick="event.stopPropagation()"` prevented event bubbling to delegated handler
+- **Impact**: Delete button was completely non-functional - clicking had no effect
+- **Solution**: 
+  - Removed inline onclick attribute to allow event bubbling
+  - Event now properly reaches delegated click handler
+  - Added `e.preventDefault()` for additional safety
+  - Confirmation dialog now displays before deletion
+- **Behavior**: Click trash icon → confirmation dialog → confirm or cancel → delete on confirm
+- **Commits**: `23437d9` (confirmation dialog), `9f834fd` (event delegation fix)
 
 ### February 24, 2026 - Sidebar Toggle Button Alignment Fix
 - **Fixed**: Sidebar toggle button alignment to prevent overlap with header text
