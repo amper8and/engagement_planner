@@ -484,14 +484,17 @@ function renderStepCard(step, options) {
         </div>
 
         <div class="mt-4 grid grid-cols-2 gap-3">
-          <div>
+          <div class="relative">
             <div class="text-xs font-medium text-slate-700 mb-1">Date</div>
             <input
-              type="date"
-              class="w-full rounded-xl border px-3 py-2 text-sm"
+              type="text"
+              class="w-full rounded-xl border px-3 py-2 text-sm cursor-pointer"
               value="${step.date || ''}"
               data-field="date"
               data-step-id="${step.id}"
+              data-date-picker="true"
+              placeholder="YYYY-MM-DD"
+              readonly
             />
           </div>
           <div>
@@ -742,22 +745,28 @@ function render() {
                     placeholder="Engagement Plan title"
                   />
                   <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    <div>
+                    <div class="relative">
                       <div class="text-xs font-medium text-slate-700 mb-1">Plan start date</div>
                       <input
-                        type="date"
-                        class="w-full rounded-xl border px-3 py-2 text-sm bg-white"
+                        type="text"
+                        class="w-full rounded-xl border px-3 py-2 text-sm bg-white cursor-pointer"
                         value="${plan.startDate}"
                         data-field="planStartDate"
+                        data-date-picker="true"
+                        placeholder="YYYY-MM-DD"
+                        readonly
                       />
                     </div>
-                    <div>
+                    <div class="relative">
                       <div class="text-xs font-medium text-slate-700 mb-1">Plan end date</div>
                       <input
-                        type="date"
-                        class="w-full rounded-xl border px-3 py-2 text-sm bg-white"
+                        type="text"
+                        class="w-full rounded-xl border px-3 py-2 text-sm bg-white cursor-pointer"
                         value="${plan.endDate}"
                         data-field="planEndDate"
+                        data-date-picker="true"
+                        placeholder="YYYY-MM-DD"
+                        readonly
                       />
                     </div>
                     <div>
@@ -1194,6 +1203,150 @@ function attachEventListeners() {
       }
     }
   });
+  
+  // Custom date picker handler
+  let activeDatePicker = null;
+  
+  root.addEventListener('click', (e) => {
+    const dateInput = e.target.closest('[data-date-picker="true"]');
+    
+    if (dateInput) {
+      e.stopPropagation();
+      showDatePicker(dateInput);
+    } else if (activeDatePicker && !e.target.closest('.date-picker-calendar')) {
+      // Click outside - close calendar
+      closeDatePicker();
+    }
+  });
+  
+  function showDatePicker(input) {
+    // Close any existing picker
+    closeDatePicker();
+    
+    // Create calendar element
+    const calendar = document.createElement('div');
+    calendar.className = 'date-picker-calendar absolute z-50 bg-white border rounded-xl shadow-xl p-3 mt-1';
+    calendar.style.minWidth = '280px';
+    
+    // Parse current date or use today
+    const currentValue = input.value;
+    const initialDate = currentValue ? new Date(currentValue + 'T00:00:00') : new Date();
+    let viewMonth = initialDate.getMonth();
+    let viewYear = initialDate.getFullYear();
+    
+    function renderCalendar() {
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+      
+      // Create header with month/year navigation
+      const header = `
+        <div class="flex items-center justify-between mb-2">
+          <button type="button" class="date-prev-month px-2 py-1 hover:bg-slate-100 rounded">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <div class="font-semibold text-sm">${monthNames[viewMonth]} ${viewYear}</div>
+          <button type="button" class="date-next-month px-2 py-1 hover:bg-slate-100 rounded">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      `;
+      
+      // Create day headers
+      const dayHeaders = `
+        <div class="grid grid-cols-7 gap-1 mb-1">
+          ${['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => 
+            `<div class="text-xs text-center text-slate-500 font-medium p-1">${day}</div>`
+          ).join('')}
+        </div>
+      `;
+      
+      // Create calendar grid
+      const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+      const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+      const today = new Date();
+      const todayStr = isoDate(today);
+      
+      let daysHTML = '<div class="grid grid-cols-7 gap-1">';
+      
+      // Empty cells for days before month starts
+      for (let i = 0; i < firstDay; i++) {
+        daysHTML += '<div></div>';
+      }
+      
+      // Days of the month
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const isSelected = dateStr === currentValue;
+        const isToday = dateStr === todayStr;
+        
+        let classes = 'text-sm p-2 text-center rounded cursor-pointer hover:bg-slate-100';
+        if (isSelected) classes += ' bg-slate-900 text-white hover:bg-slate-800';
+        else if (isToday) classes += ' border border-slate-300';
+        
+        daysHTML += `<button type="button" class="date-select-day ${classes}" data-date="${dateStr}">${day}</button>`;
+      }
+      
+      daysHTML += '</div>';
+      
+      calendar.innerHTML = header + dayHeaders + daysHTML;
+      
+      // Attach month navigation listeners
+      calendar.querySelector('.date-prev-month').addEventListener('click', (e) => {
+        e.stopPropagation();
+        viewMonth--;
+        if (viewMonth < 0) {
+          viewMonth = 11;
+          viewYear--;
+        }
+        renderCalendar();
+      });
+      
+      calendar.querySelector('.date-next-month').addEventListener('click', (e) => {
+        e.stopPropagation();
+        viewMonth++;
+        if (viewMonth > 11) {
+          viewMonth = 0;
+          viewYear++;
+        }
+        renderCalendar();
+      });
+      
+      // Attach day selection listeners
+      calendar.querySelectorAll('.date-select-day').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const selectedDate = btn.dataset.date;
+          input.value = selectedDate;
+          
+          // Trigger change event to update state
+          const changeEvent = new Event('input', { bubbles: true });
+          input.dispatchEvent(changeEvent);
+          
+          closeDatePicker();
+        });
+      });
+    }
+    
+    renderCalendar();
+    
+    // Position calendar below input
+    const parent = input.parentElement;
+    parent.style.position = 'relative';
+    parent.appendChild(calendar);
+    
+    activeDatePicker = { input, calendar };
+  }
+  
+  function closeDatePicker() {
+    if (activeDatePicker) {
+      activeDatePicker.calendar.remove();
+      activeDatePicker = null;
+    }
+  }
 }
 
 // Initialize app
