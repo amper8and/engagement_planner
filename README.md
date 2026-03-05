@@ -21,7 +21,7 @@ A comprehensive project engagement planning and monitoring tool built with Hono 
 ## URLs
 
 - **Production**: https://webapp-5fs.pages.dev
-- **Latest Deployment**: https://5733daa9.webapp-5fs.pages.dev
+- **Latest Deployment**: https://f3f0cddd.webapp-5fs.pages.dev
 - **GitHub Repository**: https://github.com/amper8and/engagement_planner
 
 ## Technology Stack
@@ -215,6 +215,25 @@ webapp/
 - ✅ **Fixed**: Active card always centered and visible during typing
 
 ## Recent Updates
+
+### February 24, 2026 - Smooth Slider and Input UX Improvements
+- **Fixed**: Progress and Success Probability sliders now drag smoothly without jerking
+- **Fixed**: Number inputs now allow typing full values (e.g., "20") without premature updates
+- **Issues**: 
+  - Sliders were jerky during drag due to re-renders on every movement
+  - Number inputs refreshed after each digit, making multi-digit entry impossible
+  - Date picker month navigation could close unexpectedly (browser limitation)
+- **Solutions**:
+  - **Slider Dragging**: Track drag state locally, only save to state on mouseup/touchend
+  - **Number Inputs**: Use blur/Enter events instead of input events for progress/probability fields
+  - **Visual Sync**: Sliders update number inputs in real-time during drag (visual only)
+  - **Single Save**: Only one state update per slider drag or number input completion
+- **Benefits**:
+  - Butter-smooth slider dragging experience
+  - Can type full numbers without interruption
+  - Data saves on blur (click away) or Enter key
+  - Guardrails still enforced (initial=0%, end=100%)
+- **Commit**: `c8f2abe`
 
 ### February 24, 2026 - Auto-Sync Plan Dates with Step Dates
 - **Fixed**: Plan end date in sidebar now automatically matches the end step's date
