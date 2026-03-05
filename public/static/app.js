@@ -959,6 +959,14 @@ function attachEventListeners() {
 
   const root = document.getElementById('root');
 
+  // Track slider drag state to enable smooth dragging without re-renders
+  const sliderState = {
+    isDragging: false,
+    field: null,
+    stepId: null,
+    value: null
+  };
+
   // Handle button clicks using event delegation (single listener)
   root.addEventListener('click', (e) => {
     const target = e.target.closest('[data-action]');
@@ -1009,6 +1017,54 @@ function attachEventListeners() {
     }
   });
 
+  // Handle range slider start (mousedown/touchstart)
+  root.addEventListener('mousedown', (e) => {
+    if (e.target.type === 'range' && e.target.dataset.field) {
+      sliderState.isDragging = true;
+      sliderState.field = e.target.dataset.field;
+      sliderState.stepId = e.target.dataset.stepId;
+      sliderState.value = parseInt(e.target.value);
+    }
+  });
+
+  root.addEventListener('touchstart', (e) => {
+    if (e.target.type === 'range' && e.target.dataset.field) {
+      sliderState.isDragging = true;
+      sliderState.field = e.target.dataset.field;
+      sliderState.stepId = e.target.dataset.stepId;
+      sliderState.value = parseInt(e.target.value);
+    }
+  });
+
+  // Handle range slider end (mouseup/touchend) - THIS is when we save
+  const handleSliderEnd = () => {
+    if (sliderState.isDragging && sliderState.stepId) {
+      const patch = { [sliderState.field]: sliderState.value };
+      
+      // Enforce guardrails
+      const plan = appState.getActivePlan();
+      const step = plan.steps.find(s => s.id === sliderState.stepId);
+      if (step) {
+        if (step.type === 'initial' && sliderState.field === 'progress') patch.progress = 0;
+        if (step.type === 'end' && sliderState.field === 'progress') patch.progress = 100;
+        if (step.type === 'end' && sliderState.field === 'successProbability') patch.successProbability = 100;
+      }
+
+      appState.updateStep(sliderState.stepId, patch);
+    }
+    
+    // Reset drag state
+    sliderState.isDragging = false;
+    sliderState.field = null;
+    sliderState.stepId = null;
+    sliderState.value = null;
+  };
+
+  root.addEventListener('mouseup', handleSliderEnd);
+  root.addEventListener('touchend', handleSliderEnd);
+  // Also handle case where mouse leaves window while dragging
+  document.addEventListener('mouseup', handleSliderEnd);
+
   // Handle input changes using event delegation (single listener)
   root.addEventListener('input', (e) => {
     const target = e.target;
@@ -1016,6 +1072,28 @@ function attachEventListeners() {
     if (!field) return;
 
     const stepId = target.dataset.stepId;
+    
+    // For range sliders during drag, only update the paired number input visually
+    if (target.type === 'range' && sliderState.isDragging) {
+      const value = parseInt(target.value);
+      sliderState.value = value;
+      
+      // Sync the number input visually without triggering state update
+      const numberInput = root.querySelector(
+        `[data-field="${field}"][data-step-id="${stepId}"][data-type="number"]`
+      );
+      if (numberInput) {
+        numberInput.value = value;
+      }
+      return; // Don't update state yet, wait for mouseup
+    }
+
+    // For number inputs (progress/successProbability), don't update on input event
+    // We'll handle these on blur/enter instead
+    if (target.type === 'number' && (field === 'progress' || field === 'successProbability')) {
+      return; // Skip immediate update, handle on blur
+    }
+
     const value = target.type === 'number' ? parseInt(target.value) || 0 : target.value;
 
     if (field === 'sidebarQuery') {
@@ -1040,8 +1118,8 @@ function attachEventListeners() {
 
       appState.updateStep(stepId, patch);
       
-      // Sync range and number inputs
-      if (target.dataset.type) {
+      // Sync range and number inputs (but not for progress/successProbability number inputs)
+      if (target.dataset.type && target.type !== 'number') {
         const otherType = target.dataset.type === 'range' ? 'number' : 'range';
         const otherInput = root.querySelector(
           `[data-field="${field}"][data-step-id="${stepId}"][data-type="${otherType}"]`
@@ -1051,6 +1129,53 @@ function attachEventListeners() {
         }
       }
     }
+  });
+
+  // Handle number input blur/enter for progress and successProbability
+  root.addEventListener('blur', (e) => {
+    const target = e.target;
+    if (target.type !== 'number') return;
+    
+    const field = target.dataset.field;
+    if (field !== 'progress' && field !== 'successProbability') return;
+    
+    const stepId = target.dataset.stepId;
+    if (!stepId) return;
+
+    const value = parseInt(target.value) || 0;
+    const patch = { [field]: value };
+    
+    // Enforce guardrails
+    const plan = appState.getActivePlan();
+    const step = plan.steps.find(s => s.id === stepId);
+    if (step) {
+      if (step.type === 'initial' && field === 'progress') patch.progress = 0;
+      if (step.type === 'end' && field === 'progress') patch.progress = 100;
+      if (step.type === 'end' && field === 'successProbability') patch.successProbability = 100;
+    }
+
+    appState.updateStep(stepId, patch);
+    
+    // Sync the range slider
+    const rangeInput = root.querySelector(
+      `[data-field="${field}"][data-step-id="${stepId}"][data-type="range"]`
+    );
+    if (rangeInput) {
+      rangeInput.value = patch[field];
+    }
+  }, true); // Use capture phase
+
+  // Handle Enter key on number inputs
+  root.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    
+    const target = e.target;
+    if (target.type !== 'number') return;
+    
+    const field = target.dataset.field;
+    if (field !== 'progress' && field !== 'successProbability') return;
+    
+    target.blur(); // Trigger blur handler
   });
 
   // Handle clicks on step cards or input fields - scroll card into view
