@@ -21,7 +21,7 @@ A comprehensive project engagement planning and monitoring tool built with Hono 
 ## URLs
 
 - **Production**: https://webapp-5fs.pages.dev
-- **Latest Deployment**: https://f3f0cddd.webapp-5fs.pages.dev
+- **Latest Deployment**: https://4e0d956f.webapp-5fs.pages.dev
 - **GitHub Repository**: https://github.com/amper8and/engagement_planner
 
 ## Technology Stack
@@ -215,6 +215,25 @@ webapp/
 - ✅ **Fixed**: Active card always centered and visible during typing
 
 ## Recent Updates
+
+### February 24, 2026 - Custom Date Picker with Proper Month Navigation
+- **Fixed**: Date picker now stays open when navigating between months
+- **Issue**: Native HTML5 date picker auto-selected dates on month change, closing immediately
+- **Problem**: Users couldn't navigate to different months to select their desired date
+- **Solution**: Custom lightweight date picker implementation
+- **Features**:
+  - **Month Navigation**: Previous/Next arrows to navigate freely through months
+  - **Calendar Stays Open**: No auto-selection, waits for explicit date click
+  - **Visual Feedback**: Selected date highlighted, today's date marked with border
+  - **Smart Closing**: Closes on date selection or click outside
+  - **Clean UI**: Consistent with Tailwind design system
+- **Behavior**:
+  - Click date field → Calendar popup opens
+  - Navigate months with arrows → Calendar stays open
+  - Click desired date → Calendar closes and saves date
+  - Click outside → Calendar closes without saving
+- **Benefits**: Can now easily select dates in any month without interruption
+- **Commit**: `47de38b`
 
 ### February 24, 2026 - Smooth Slider and Input UX Improvements
 - **Fixed**: Progress and Success Probability sliders now drag smoothly without jerking
