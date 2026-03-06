@@ -262,8 +262,48 @@ class AppState {
 
   getFilteredPlans() {
     const q = this.sidebarQuery.trim().toLowerCase();
-    if (!q) return this.plans;
-    return this.plans.filter(p => p.title.toLowerCase().includes(q));
+    let filtered = q ? this.plans.filter(p => p.title.toLowerCase().includes(q)) : this.plans;
+    // Sort by displayOrder (ascending), fallback to created_at
+    return filtered.sort((a, b) => {
+      if (a.displayOrder !== undefined && b.displayOrder !== undefined) {
+        return a.displayOrder - b.displayOrder;
+      }
+      return 0; // Keep original order if no displayOrder
+    });
+  }
+
+  async reorderPlans(planId, newIndex) {
+    // Find the plan being moved
+    const planIndex = this.plans.findIndex(p => p.id === planId);
+    if (planIndex === -1) return;
+
+    // Reorder the plans array
+    const [movedPlan] = this.plans.splice(planIndex, 1);
+    this.plans.splice(newIndex, 0, movedPlan);
+
+    // Update displayOrder for all plans
+    const updatedPlans = this.plans.map((plan, index) => ({
+      ...plan,
+      displayOrder: index
+    }));
+
+    // Save all plans with new order
+    try {
+      await Promise.all(
+        updatedPlans.map(plan =>
+          fetch(`/api/plans/${plan.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(plan)
+          })
+        )
+      );
+      
+      this.plans = updatedPlans;
+      this.notify();
+    } catch (error) {
+      console.error('Failed to reorder plans:', error);
+    }
   }
 
   updateActivePlan(patch) {
@@ -661,7 +701,7 @@ function render() {
           </div>
 
           <div class="px-2 pb-4">
-            ${filteredPlans.map(p => {
+            ${filteredPlans.map((p, index) => {
               const isActive = p.id === appState.activePlanId;
               // Calculate current progress for this plan
               const concluded = p.steps.filter(s => s.status === STATUS.CONCLUDED);
@@ -669,13 +709,16 @@ function render() {
               
               return `
                 <div
-                  class="mx-2 mb-2 rounded-2xl border p-3 cursor-pointer ${
+                  class="mx-2 mb-2 rounded-2xl border p-3 cursor-move ${
                     isActive
                       ? "bg-slate-900 text-white border-slate-900"
                       : "bg-white hover:bg-slate-50"
                   }"
                   data-action="selectPlan"
                   data-plan-id="${p.id}"
+                  data-draggable-plan="true"
+                  data-plan-index="${index}"
+                  draggable="true"
                 >
                   <div class="flex items-center justify-between gap-3">
                     <div class="min-w-0 flex-1 text-center">
@@ -1202,6 +1245,103 @@ function attachEventListeners() {
         }, 10);
       }
     }
+  });
+  
+  // Drag-and-drop for plan reordering
+  let draggedPlanId = null;
+  let draggedPlanIndex = null;
+  
+  root.addEventListener('dragstart', (e) => {
+    const planCard = e.target.closest('[data-draggable-plan="true"]');
+    if (!planCard) return;
+    
+    draggedPlanId = planCard.dataset.planId;
+    draggedPlanIndex = parseInt(planCard.dataset.planIndex, 10);
+    
+    // Visual feedback - make dragged item semi-transparent
+    planCard.style.opacity = '0.4';
+    
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', planCard.innerHTML);
+  });
+  
+  root.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    
+    const planCard = e.target.closest('[data-draggable-plan="true"]');
+    if (!planCard || !draggedPlanId) return;
+    
+    e.dataTransfer.dropEffect = 'move';
+    
+    // Show drop indicator
+    const rect = planCard.getBoundingClientRect();
+    const midpoint = rect.top + rect.height / 2;
+    
+    // Remove all drop indicators first
+    document.querySelectorAll('[data-draggable-plan="true"]').forEach(card => {
+      card.classList.remove('border-t-4', 'border-t-blue-500', 'border-b-4', 'border-b-blue-500');
+    });
+    
+    // Add indicator based on mouse position
+    if (e.clientY < midpoint) {
+      planCard.classList.add('border-t-4', 'border-t-blue-500');
+    } else {
+      planCard.classList.add('border-b-4', 'border-b-blue-500');
+    }
+  });
+  
+  root.addEventListener('dragleave', (e) => {
+    const planCard = e.target.closest('[data-draggable-plan="true"]');
+    if (!planCard) return;
+    
+    // Remove drop indicators
+    planCard.classList.remove('border-t-4', 'border-t-blue-500', 'border-b-4', 'border-b-blue-500');
+  });
+  
+  root.addEventListener('dragend', (e) => {
+    const planCard = e.target.closest('[data-draggable-plan="true"]');
+    if (!planCard) return;
+    
+    // Reset opacity
+    planCard.style.opacity = '1';
+    
+    // Remove all drop indicators
+    document.querySelectorAll('[data-draggable-plan="true"]').forEach(card => {
+      card.classList.remove('border-t-4', 'border-t-blue-500', 'border-b-4', 'border-b-blue-500');
+    });
+    
+    // If dropped on a valid target, reorder
+    if (draggedPlanId && draggedPlanIndex !== null) {
+      const targetCard = e.target.closest('[data-draggable-plan="true"]');
+      if (targetCard) {
+        const targetIndex = parseInt(targetCard.dataset.planIndex, 10);
+        
+        if (draggedPlanIndex !== targetIndex) {
+          // Calculate new index based on drop position
+          const rect = targetCard.getBoundingClientRect();
+          const midpoint = rect.top + rect.height / 2;
+          let newIndex = targetIndex;
+          
+          // If dropping below midpoint, insert after target
+          if (e.clientY >= midpoint && draggedPlanIndex < targetIndex) {
+            // No adjustment needed
+          } else if (e.clientY < midpoint && draggedPlanIndex > targetIndex) {
+            // No adjustment needed
+          } else if (e.clientY >= midpoint) {
+            newIndex = targetIndex;
+          }
+          
+          appState.reorderPlans(draggedPlanId, newIndex);
+        }
+      }
+    }
+    
+    draggedPlanId = null;
+    draggedPlanIndex = null;
+  });
+  
+  root.addEventListener('drop', (e) => {
+    e.preventDefault();
   });
   
   // Custom date picker handler

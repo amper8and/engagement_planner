@@ -19,7 +19,7 @@ app.get('/api/plans', async (c) => {
   const { DB } = c.env
 
   const { results: plans } = await DB.prepare(`
-    SELECT * FROM plans ORDER BY created_at DESC
+    SELECT * FROM plans ORDER BY display_order ASC, created_at DESC
   `).all()
 
   // Get steps for all plans
@@ -34,6 +34,7 @@ app.get('/api/plans', async (c) => {
         title: plan.title,
         startDate: plan.start_date,
         endDate: plan.end_date,
+        displayOrder: plan.display_order,
         steps: steps.map((s: any) => ({
           id: s.id,
           type: s.type,
@@ -74,6 +75,7 @@ app.get('/api/plans/:id', async (c) => {
     title: plan.title,
     startDate: plan.start_date,
     endDate: plan.end_date,
+    displayOrder: plan.display_order,
     steps: steps.map((s: any) => ({
       id: s.id,
       type: s.type,
@@ -93,12 +95,17 @@ app.post('/api/plans', async (c) => {
   const { DB } = c.env
   const body = await c.req.json()
 
-  const { id, title, startDate, endDate, steps } = body
+  const { id, title, startDate, endDate, steps, displayOrder } = body
+
+  // Get max display_order if not provided
+  const maxOrder = displayOrder !== undefined ? displayOrder : (
+    await DB.prepare(`SELECT COALESCE(MAX(display_order), 0) + 1 as next_order FROM plans`).first()
+  ).next_order
 
   await DB.prepare(`
-    INSERT INTO plans (id, title, start_date, end_date)
-    VALUES (?, ?, ?, ?)
-  `).bind(id, title, startDate, endDate).run()
+    INSERT INTO plans (id, title, start_date, end_date, display_order)
+    VALUES (?, ?, ?, ?, ?)
+  `).bind(id, title, startDate, endDate, maxOrder).run()
 
   // Insert steps
   for (let i = 0; i < steps.length; i++) {
@@ -132,12 +139,21 @@ app.put('/api/plans/:id', async (c) => {
   const planId = c.req.param('id')
   const body = await c.req.json()
 
-  const { title, startDate, endDate, steps } = body
+  const { title, startDate, endDate, steps, displayOrder } = body
 
-  await DB.prepare(`
-    UPDATE plans SET title = ?, start_date = ?, end_date = ?, updated_at = CURRENT_TIMESTAMP
-    WHERE id = ?
-  `).bind(title, startDate, endDate, planId).run()
+  // Build dynamic UPDATE query
+  let updateQuery = `UPDATE plans SET title = ?, start_date = ?, end_date = ?, updated_at = CURRENT_TIMESTAMP`
+  const params = [title, startDate, endDate]
+  
+  if (displayOrder !== undefined) {
+    updateQuery += `, display_order = ?`
+    params.push(displayOrder)
+  }
+  
+  updateQuery += ` WHERE id = ?`
+  params.push(planId)
+
+  await DB.prepare(updateQuery).bind(...params).run()
 
   // Delete existing steps and recreate
   await DB.prepare(`DELETE FROM steps WHERE plan_id = ?`).bind(planId).run()
