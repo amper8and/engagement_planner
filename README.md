@@ -9,6 +9,7 @@ A comprehensive project engagement planning and monitoring tool built with Hono 
 ### Key Features
 
 - **Plan Management**: Create, edit, and manage multiple engagement plans
+- **Drag-and-Drop Reordering**: Intuitively reorder plans in the sidebar by dragging and dropping
 - **Step-by-Step Tracking**: Break down engagements into initial, intermediate, and end steps
 - **Progress Monitoring**: Track completion progress across all steps
 - **Success Probability**: Calculate and visualize success likelihood based on completed steps
@@ -21,7 +22,7 @@ A comprehensive project engagement planning and monitoring tool built with Hono 
 ## URLs
 
 - **Production**: https://webapp-5fs.pages.dev
-- **Latest Deployment**: https://4e0d956f.webapp-5fs.pages.dev
+- **Latest Deployment**: https://76a594f0.webapp-5fs.pages.dev
 - **GitHub Repository**: https://github.com/amper8and/engagement_planner
 
 ## Technology Stack
@@ -41,6 +42,7 @@ A comprehensive project engagement planning and monitoring tool built with Hono 
 - `title` (TEXT): Plan title
 - `start_date` (TEXT): Plan start date (ISO format)
 - `end_date` (TEXT): Plan end date (ISO format)
+- `display_order` (INTEGER): Custom user-defined order for sidebar display
 - `created_at` (DATETIME): Creation timestamp
 - `updated_at` (DATETIME): Last update timestamp
 
@@ -74,6 +76,21 @@ A comprehensive project engagement planning and monitoring tool built with Hono 
 1. Click "New" button in the sidebar
 2. Enter plan title, start date, and end date
 3. The system creates a plan with Initial and End steps automatically
+
+### Reordering Plans
+
+**Drag-and-Drop**:
+- Click and hold any plan card in the sidebar
+- Drag the card to a new position
+- A blue line indicator shows where the plan will be dropped
+- Release to drop the plan in its new position
+- The new order is automatically saved to the database
+
+**Visual Feedback**:
+- Dragged card becomes semi-transparent (40% opacity)
+- Blue border appears above or below target cards
+- Shows exactly where plan will be inserted
+- Smooth animations during reordering
 
 ### Managing Steps
 
@@ -196,6 +213,7 @@ webapp/
 ## Features Completed
 
 - ✅ Plan creation, editing, and deletion
+- ✅ **Drag-and-drop plan reordering** - intuitively reorder plans in sidebar
 - ✅ Step management (add, remove, reorder)
 - ✅ Progress and success probability tracking
 - ✅ Status management (Planned/Concluded)
@@ -215,6 +233,27 @@ webapp/
 - ✅ **Fixed**: Active card always centered and visible during typing
 
 ## Recent Updates
+
+### March 6, 2026 - Drag-and-Drop Plan Reordering
+- **Added**: Intuitive drag-and-drop functionality for reordering plans in sidebar
+- **Features**:
+  - **Visual Feedback**: Dragged card becomes semi-transparent, blue drop indicators
+  - **Persistent Order**: New order automatically saved to database
+  - **Smooth Animations**: Professional drag-and-drop experience
+  - **Database Schema**: Added `display_order` column to plans table
+  - **Backend Support**: API now accepts and returns `displayOrder` field
+  - **Frontend Logic**: New `reorderPlans()` method in AppState
+- **Implementation**:
+  - Migration file: `0002_add_plan_display_order.sql`
+  - Backend updates: Modified GET/POST/PUT endpoints for displayOrder
+  - Frontend: Drag event handlers (dragstart, dragover, dragleave, dragend, drop)
+  - Visual indicators: Blue borders show drop position
+- **Benefits**:
+  - Organize plans in custom order that makes sense for your workflow
+  - No more relying on creation date for plan ordering
+  - Quick reorganization with simple drag-and-drop
+- **Commit**: `3428959`
+- **Deployment**: https://76a594f0.webapp-5fs.pages.dev
 
 ### February 24, 2026 - Custom Date Picker with Proper Month Navigation
 - **Fixed**: Date picker now stays open when navigating between months
@@ -430,3 +469,4 @@ MIT License - See GitHub repository for details
 ## Support
 
 For issues or questions, please open an issue on the [GitHub repository](https://github.com/amper8and/engagement_planner).
+please open an issue on the [GitHub repository](https://github.com/amper8and/engagement_planner).
