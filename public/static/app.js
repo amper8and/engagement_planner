@@ -273,21 +273,31 @@ class AppState {
   }
 
   async reorderPlans(planId, newIndex) {
-    // Find the plan being moved
-    const planIndex = this.plans.findIndex(p => p.id === planId);
-    if (planIndex === -1) return;
+    // Get the current filtered/sorted order
+    const filteredPlans = this.getFilteredPlans();
+    
+    // Find the plan being moved in filtered array
+    const oldIndex = filteredPlans.findIndex(p => p.id === planId);
+    if (oldIndex === -1) return;
 
-    // Reorder the plans array
-    const [movedPlan] = this.plans.splice(planIndex, 1);
-    this.plans.splice(newIndex, 0, movedPlan);
+    // Create new ordered array by moving the plan
+    const reorderedFiltered = [...filteredPlans];
+    const [movedPlan] = reorderedFiltered.splice(oldIndex, 1);
+    reorderedFiltered.splice(newIndex, 0, movedPlan);
 
-    // Update displayOrder for all plans
-    const updatedPlans = this.plans.map((plan, index) => ({
+    // Assign new displayOrder values based on new positions
+    const updatedPlans = reorderedFiltered.map((plan, index) => ({
       ...plan,
       displayOrder: index
     }));
 
-    // Save all plans with new order
+    // Update the main plans array with new displayOrder values
+    this.plans = this.plans.map(plan => {
+      const updated = updatedPlans.find(p => p.id === plan.id);
+      return updated || plan;
+    });
+
+    // Save all updated plans to the database
     try {
       await Promise.all(
         updatedPlans.map(plan =>
@@ -299,7 +309,6 @@ class AppState {
         )
       );
       
-      this.plans = updatedPlans;
       this.notify();
     } catch (error) {
       console.error('Failed to reorder plans:', error);
@@ -1250,6 +1259,8 @@ function attachEventListeners() {
   // Drag-and-drop for plan reordering
   let draggedPlanId = null;
   let draggedPlanIndex = null;
+  let lastDropTarget = null;
+  let lastDropPosition = null; // 'before' or 'after'
   
   root.addEventListener('dragstart', (e) => {
     const planCard = e.target.closest('[data-draggable-plan="true"]');
@@ -1276,6 +1287,10 @@ function attachEventListeners() {
     // Show drop indicator
     const rect = planCard.getBoundingClientRect();
     const midpoint = rect.top + rect.height / 2;
+    
+    // Store the target for later use
+    lastDropTarget = planCard;
+    lastDropPosition = e.clientY < midpoint ? 'before' : 'after';
     
     // Remove all drop indicators first
     document.querySelectorAll('[data-draggable-plan="true"]').forEach(card => {
@@ -1311,33 +1326,33 @@ function attachEventListeners() {
     });
     
     // If dropped on a valid target, reorder
-    if (draggedPlanId && draggedPlanIndex !== null) {
-      const targetCard = e.target.closest('[data-draggable-plan="true"]');
-      if (targetCard) {
-        const targetIndex = parseInt(targetCard.dataset.planIndex, 10);
+    if (draggedPlanId && lastDropTarget && draggedPlanIndex !== null) {
+      const targetIndex = parseInt(lastDropTarget.dataset.planIndex, 10);
+      
+      if (draggedPlanIndex !== targetIndex) {
+        // Calculate new index based on drop position
+        let newIndex = targetIndex;
         
-        if (draggedPlanIndex !== targetIndex) {
-          // Calculate new index based on drop position
-          const rect = targetCard.getBoundingClientRect();
-          const midpoint = rect.top + rect.height / 2;
-          let newIndex = targetIndex;
-          
-          // If dropping below midpoint, insert after target
-          if (e.clientY >= midpoint && draggedPlanIndex < targetIndex) {
-            // No adjustment needed
-          } else if (e.clientY < midpoint && draggedPlanIndex > targetIndex) {
-            // No adjustment needed
-          } else if (e.clientY >= midpoint) {
-            newIndex = targetIndex;
-          }
-          
-          appState.reorderPlans(draggedPlanId, newIndex);
+        // If dropping after target and dragging from before, add 1
+        if (lastDropPosition === 'after' && draggedPlanIndex < targetIndex) {
+          newIndex = targetIndex;
+        } else if (lastDropPosition === 'before' && draggedPlanIndex > targetIndex) {
+          newIndex = targetIndex;
+        } else if (lastDropPosition === 'after') {
+          newIndex = targetIndex + 1;
         }
+        
+        // Clamp to valid range
+        newIndex = Math.max(0, Math.min(newIndex, document.querySelectorAll('[data-draggable-plan="true"]').length - 1));
+        
+        appState.reorderPlans(draggedPlanId, newIndex);
       }
     }
     
     draggedPlanId = null;
     draggedPlanIndex = null;
+    lastDropTarget = null;
+    lastDropPosition = null;
   });
   
   root.addEventListener('drop', (e) => {
