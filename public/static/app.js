@@ -689,8 +689,9 @@ function render() {
     <div class="min-h-screen bg-slate-50 text-slate-900">
       <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <aside class="fixed left-0 top-0 h-screen z-20 border-r bg-white transition-transform duration-300 ${appState.sidebarCollapsed ? '-translate-x-full' : 'translate-x-0'} w-[320px]">
-          <div class="p-4">
+        <aside class="fixed left-0 top-0 h-screen z-20 border-r bg-white transition-transform duration-300 ${appState.sidebarCollapsed ? '-translate-x-full' : 'translate-x-0'} w-[320px] flex flex-col">
+          <!-- Fixed Header -->
+          <div class="p-4 shrink-0">
             <div class="text-xs font-semibold text-slate-500">Engagement Plan Monitor</div>
             <div class="mt-1 flex items-center justify-between gap-3">
               <div class="text-sm font-semibold">Plans</div>
@@ -709,7 +710,8 @@ function render() {
             />
           </div>
 
-          <div class="px-2 pb-4">
+          <!-- Scrollable Plans Area -->
+          <div class="flex-1 overflow-y-auto px-2 pb-4">
             ${filteredPlans.map((p, index) => {
               const isActive = p.id === appState.activePlanId;
               // Calculate current progress for this plan
