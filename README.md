@@ -23,7 +23,7 @@ A comprehensive project engagement planning and monitoring tool built with Hono 
 ## URLs
 
 - **Production**: https://webapp-5fs.pages.dev
-- **Latest Deployment**: https://63a809da.webapp-5fs.pages.dev
+- **Latest Deployment**: https://10b43662.webapp-5fs.pages.dev
 - **GitHub Repository**: https://github.com/amper8and/engagement_planner
 
 ## Technology Stack
@@ -326,6 +326,17 @@ webapp/
   - Header alignment: Changed from `items-start` to `items-center` for consistent vertical centering
 - **Result**: Clean, professional header layout with no overlap between toggle button and "Engagement" heading
 - **Commit**: `0c4654d`
+
+### March 7, 2026 - Scrollable Sidebar Fix
+- **Fixed**: Added scroll functionality to sidebar for accessing all plans
+- **Problem**: Plans below the viewport were inaccessible when list exceeded screen height
+- **Solution**: Restructured sidebar with flexbox layout
+  - Fixed header section (title, New button, search bar) with `shrink-0`
+  - Scrollable plans area with `flex-1` and `overflow-y-auto`
+  - Sidebar uses `flex flex-col` for proper layout
+- **Result**: All plans are now accessible regardless of list length
+- **GitHub**: `90acc64`
+- **Deployed**: https://10b43662.webapp-5fs.pages.dev
 
 ### March 7, 2026 - SKY BLUE UI Refresh
 - **Updated**: Complete UI refresh with Sky Blue accent color palette
