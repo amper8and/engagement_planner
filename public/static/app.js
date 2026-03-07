@@ -7,7 +7,7 @@ const STATUS = {
 };
 
 const BTN =
-  "transition active:scale-[0.98] active:opacity-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300";
+  "transition active:scale-[0.98] active:opacity-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300";
 
 function uid(prefix = "id") {
   return `${prefix}_${Math.random().toString(16).slice(2)}_${Date.now().toString(16)}`;
@@ -472,7 +472,7 @@ function renderStepCard(step, options) {
   const lockedFieldClass = "opacity-50 cursor-not-allowed";
 
   return `
-    <div class="w-[360px] shrink-0 rounded-2xl border bg-white shadow-sm" data-step-card data-step-id="${step.id}">
+    <div class="w-[360px] shrink-0 rounded-2xl border bg-white shadow-sm transition-colors" data-step-card data-step-id="${step.id}">
       <div class="p-4">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
@@ -496,7 +496,7 @@ function renderStepCard(step, options) {
           <div class="flex items-center gap-2">
             ${step.type === "intermediate" ? `
               <button
-                class="${BTN} rounded-xl border px-2 py-1 text-xs hover:bg-slate-50 active:bg-slate-100 ${
+                class="${BTN} rounded-xl border px-2 py-1 text-xs hover:bg-sky-50 active:bg-sky-100 hover:border-sky-200 ${
                   canMoveLeft ? "text-slate-700" : "text-slate-300 cursor-not-allowed"
                 }"
                 ${canMoveLeft ? '' : 'disabled'}
@@ -507,7 +507,7 @@ function renderStepCard(step, options) {
                 ←
               </button>
               <button
-                class="${BTN} rounded-xl border px-2 py-1 text-xs hover:bg-slate-50 active:bg-slate-100 ${
+                class="${BTN} rounded-xl border px-2 py-1 text-xs hover:bg-sky-50 active:bg-sky-100 hover:border-sky-200 ${
                   canMoveRight ? "text-slate-700" : "text-slate-300 cursor-not-allowed"
                 }"
                 ${canMoveRight ? '' : 'disabled'}
@@ -521,7 +521,7 @@ function renderStepCard(step, options) {
 
             ${isRemovable ? `
               <button
-                class="${BTN} rounded-xl border px-2 py-1 text-xs text-slate-700 hover:bg-slate-50 active:bg-slate-100"
+                class="${BTN} rounded-xl border px-2 py-1 text-xs text-slate-700 hover:bg-sky-50 active:bg-sky-100 hover:border-sky-200"
                 data-action="remove"
                 data-step-id="${step.id}"
                 title="Remove step"
@@ -671,7 +671,7 @@ function render() {
           <div class="text-lg font-semibold">No plans yet</div>
           <div class="text-sm text-slate-600 mt-1">Create your first engagement plan to begin.</div>
           <button
-            class="${BTN} mt-4 w-full rounded-xl bg-slate-900 text-white px-4 py-2 hover:bg-slate-800 active:bg-slate-700"
+            class="${BTN} mt-4 w-full rounded-xl bg-sky-600 text-white px-4 py-2 hover:bg-sky-700 active:bg-sky-800"
             data-action="createPlan"
           >
             Create plan
@@ -695,7 +695,7 @@ function render() {
             <div class="mt-1 flex items-center justify-between gap-3">
               <div class="text-sm font-semibold">Plans</div>
               <button
-                class="${BTN} rounded-xl bg-slate-900 text-white px-3 py-1.5 text-sm hover:bg-slate-800 active:bg-slate-700"
+                class="${BTN} rounded-xl bg-sky-600 text-white px-3 py-1.5 text-sm hover:bg-sky-700 active:bg-sky-800"
                 data-action="createPlan"
               >
                 New
@@ -720,7 +720,7 @@ function render() {
                 <div
                   class="mx-2 mb-2 rounded-2xl border p-3 cursor-move ${
                     isActive
-                      ? "bg-slate-900 text-white border-slate-900"
+                      ? "bg-sky-50 border-sky-200 border-l-4 border-l-sky-500"
                       : "bg-white hover:bg-slate-50"
                   }"
                   data-action="selectPlan"
@@ -731,21 +731,21 @@ function render() {
                 >
                   <div class="flex items-center justify-between gap-3">
                     <div class="min-w-0 flex-1 text-center">
-                      <div class="text-sm font-semibold truncate ${isActive ? "text-white" : "text-slate-900"}">
+                      <div class="text-sm font-semibold truncate ${isActive ? "text-sky-900" : "text-slate-900"}">
                         ${p.title}
                       </div>
-                      <div class="text-xs mt-1 ${isActive ? "text-slate-200" : "text-slate-500"}">
+                      <div class="text-xs mt-1 ${isActive ? "text-sky-700" : "text-slate-500"}">
                         ${p.startDate} → ${p.endDate}
                       </div>
                     </div>
                     <div class="flex items-center gap-2 shrink-0">
-                      <div class="text-2xl font-bold ${isActive ? "text-white" : "text-slate-900"}">
+                      <div class="text-2xl font-bold ${isActive ? "text-sky-700" : "text-slate-900"}">
                         ${progress}%
                       </div>
                       <button
                         class="${BTN} rounded-xl border p-2 ${
                           isActive
-                            ? "border-white/30 hover:bg-white/10 active:bg-white/15"
+                            ? "border-sky-200 hover:bg-sky-100 active:bg-sky-200"
                             : "hover:bg-slate-50 active:bg-slate-100"
                         }"
                         data-action="deletePlan"
@@ -770,7 +770,7 @@ function render() {
 
         <!-- Sidebar Toggle Button -->
         <button
-          class="${BTN} fixed left-2 top-6 z-30 rounded-xl bg-white border shadow-lg p-2 hover:bg-slate-50 active:bg-slate-100 transition-all duration-300 ${appState.sidebarCollapsed ? '' : 'left-[328px]'}"
+          class="${BTN} fixed left-2 top-6 z-30 rounded-xl bg-white border shadow-lg p-2 hover:bg-sky-50 active:bg-sky-100 hover:border-sky-200 transition-all duration-300 ${appState.sidebarCollapsed ? '' : 'left-[328px]'}"
           data-action="toggleSidebar"
           title="${appState.sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}"
         >
@@ -830,7 +830,7 @@ function render() {
                         </div>
                         <div class="mt-2 h-2 rounded-full bg-slate-100 overflow-hidden">
                           <div
-                            class="h-full bg-slate-900 rounded-full"
+                            class="h-full bg-sky-600 rounded-full"
                             style="width: ${stats.currentProgress}%"
                           ></div>
                         </div>
@@ -847,7 +847,7 @@ function render() {
                         </div>
                         <div class="mt-2 h-2 rounded-full bg-slate-100 overflow-hidden">
                           <div
-                            class="h-full bg-slate-900 rounded-full"
+                            class="h-full bg-sky-400 rounded-full"
                             style="width: ${stats.displayedProbability}%"
                           ></div>
                         </div>
@@ -870,13 +870,13 @@ function render() {
 
                 <div class="hidden lg:flex items-center gap-2">
                   <button
-                    class="${BTN} rounded-xl border bg-white px-3 py-2 text-sm hover:bg-slate-50 active:bg-slate-100"
+                    class="${BTN} rounded-xl border bg-white px-3 py-2 text-sm hover:bg-sky-50 active:bg-sky-100 hover:border-sky-200"
                     data-action="addStepBeforeEnd"
                   >
                     Add step
                   </button>
                   <button
-                    class="${BTN} rounded-xl bg-slate-900 text-white px-3 py-2 text-sm hover:bg-slate-800 active:bg-slate-700"
+                    class="${BTN} rounded-xl bg-sky-600 text-white px-3 py-2 text-sm hover:bg-sky-700 active:bg-sky-800"
                     data-action="concludeEngagement"
                   >
                     Conclude engagement
@@ -903,7 +903,7 @@ function render() {
                 if (idx > 0) {
                   parts.push(`
                     <button
-                      class="${BTN} shrink-0 w-10 h-10 rounded-full border bg-white shadow-sm hover:bg-slate-50 active:bg-slate-100 flex items-center justify-center"
+                      class="${BTN} shrink-0 w-10 h-10 rounded-full border bg-white shadow-sm hover:bg-sky-50 active:bg-sky-100 hover:border-sky-200 flex items-center justify-center"
                       data-action="insertStep"
                       data-index="${idx}"
                       title="Insert a step here"
@@ -924,7 +924,7 @@ function render() {
 
               <div class="shrink-0 flex flex-col items-center justify-center w-[140px]">
                 <button
-                  class="${BTN} w-10 h-10 rounded-full border bg-white shadow-sm hover:bg-slate-50 active:bg-slate-100 flex items-center justify-center"
+                  class="${BTN} w-10 h-10 rounded-full border bg-white shadow-sm hover:bg-sky-50 active:bg-sky-100 hover:border-sky-200 flex items-center justify-center"
                   data-action="insertStep"
                   data-index="${plan.steps.length - 1}"
                   title="Insert before End Step"
@@ -1256,6 +1256,42 @@ function attachEventListeners() {
     }
   });
   
+  // Handle focus on step card inputs - add sky blue shading to active card
+  root.addEventListener('focusin', (e) => {
+    const input = e.target;
+    if (!input.dataset || !input.dataset.stepId) return;
+    
+    const stepCard = input.closest('[data-step-card]');
+    if (stepCard) {
+      // Remove active styling from all step cards
+      document.querySelectorAll('[data-step-card]').forEach(card => {
+        card.classList.remove('bg-sky-50', 'border-sky-200');
+        card.classList.add('bg-white');
+      });
+      
+      // Add active styling to current step card
+      stepCard.classList.remove('bg-white');
+      stepCard.classList.add('bg-sky-50', 'border-sky-200');
+    }
+  });
+  
+  // Handle blur on step card inputs - remove sky blue shading when focus leaves
+  root.addEventListener('focusout', (e) => {
+    // Use setTimeout to check if focus moved to another element in the same card
+    setTimeout(() => {
+      const activeElement = document.activeElement;
+      const activeStepCard = activeElement?.closest('[data-step-card]');
+      
+      // Remove active styling from all cards that don't contain the focused element
+      document.querySelectorAll('[data-step-card]').forEach(card => {
+        if (card !== activeStepCard) {
+          card.classList.remove('bg-sky-50', 'border-sky-200');
+          card.classList.add('bg-white');
+        }
+      });
+    }, 10);
+  });
+  
   // Drag-and-drop for plan reordering
   let draggedPlanId = null;
   let draggedPlanIndex = null;
@@ -1294,14 +1330,14 @@ function attachEventListeners() {
     
     // Remove all drop indicators first
     document.querySelectorAll('[data-draggable-plan="true"]').forEach(card => {
-      card.classList.remove('border-t-4', 'border-t-blue-500', 'border-b-4', 'border-b-blue-500');
+      card.classList.remove('border-t-4', 'border-t-sky-500', 'border-b-4', 'border-b-sky-500');
     });
     
     // Add indicator based on mouse position
     if (e.clientY < midpoint) {
-      planCard.classList.add('border-t-4', 'border-t-blue-500');
+      planCard.classList.add('border-t-4', 'border-t-sky-500');
     } else {
-      planCard.classList.add('border-b-4', 'border-b-blue-500');
+      planCard.classList.add('border-b-4', 'border-b-sky-500');
     }
   });
   
@@ -1310,7 +1346,7 @@ function attachEventListeners() {
     if (!planCard) return;
     
     // Remove drop indicators
-    planCard.classList.remove('border-t-4', 'border-t-blue-500', 'border-b-4', 'border-b-blue-500');
+    planCard.classList.remove('border-t-4', 'border-t-sky-500', 'border-b-4', 'border-b-sky-500');
   });
   
   root.addEventListener('dragend', (e) => {
@@ -1322,7 +1358,7 @@ function attachEventListeners() {
     
     // Remove all drop indicators
     document.querySelectorAll('[data-draggable-plan="true"]').forEach(card => {
-      card.classList.remove('border-t-4', 'border-t-blue-500', 'border-b-4', 'border-b-blue-500');
+      card.classList.remove('border-t-4', 'border-t-sky-500', 'border-b-4', 'border-b-sky-500');
     });
     
     // If dropped on a valid target, reorder
@@ -1396,13 +1432,13 @@ function attachEventListeners() {
       // Create header with month/year navigation
       const header = `
         <div class="flex items-center justify-between mb-2">
-          <button type="button" class="date-prev-month px-2 py-1 hover:bg-slate-100 rounded">
+          <button type="button" class="date-prev-month px-2 py-1 hover:bg-sky-50 rounded">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
           <div class="font-semibold text-sm">${monthNames[viewMonth]} ${viewYear}</div>
-          <button type="button" class="date-next-month px-2 py-1 hover:bg-slate-100 rounded">
+          <button type="button" class="date-next-month px-2 py-1 hover:bg-sky-50 rounded">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
@@ -1438,8 +1474,8 @@ function attachEventListeners() {
         const isSelected = dateStr === currentValue;
         const isToday = dateStr === todayStr;
         
-        let classes = 'text-sm p-2 text-center rounded cursor-pointer hover:bg-slate-100';
-        if (isSelected) classes += ' bg-slate-900 text-white hover:bg-slate-800';
+        let classes = 'text-sm p-2 text-center rounded cursor-pointer hover:bg-sky-50';
+        if (isSelected) classes += ' bg-sky-600 text-white hover:bg-sky-700';
         else if (isToday) classes += ' border border-slate-300';
         
         daysHTML += `<button type="button" class="date-select-day ${classes}" data-date="${dateStr}">${day}</button>`;
