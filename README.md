@@ -16,13 +16,14 @@ A comprehensive project engagement planning and monitoring tool built with Hono 
 - **Status Management**: Mark steps as Planned or Concluded
 - **Review System**: Document outcomes and learnings for concluded steps
 - **Data Persistence**: All data stored in Cloudflare D1 SQLite database
-- **Responsive Design**: Beautiful Tailwind CSS interface with Noto Sans font
+- **Responsive Design**: Beautiful Tailwind CSS interface with Noto Sans font and Sky Blue accent colors
+- **Active Step Highlighting**: Focused step cards are highlighted with sky blue shading for clear visual feedback
 - **Real-time Validation**: Automatic checks for date consistency and progress flow
 
 ## URLs
 
 - **Production**: https://webapp-5fs.pages.dev
-- **Latest Deployment**: https://88114790.webapp-5fs.pages.dev
+- **Latest Deployment**: https://63a809da.webapp-5fs.pages.dev
 - **GitHub Repository**: https://github.com/amper8and/engagement_planner
 
 ## Technology Stack
@@ -325,6 +326,21 @@ webapp/
   - Header alignment: Changed from `items-start` to `items-center` for consistent vertical centering
 - **Result**: Clean, professional header layout with no overlap between toggle button and "Engagement" heading
 - **Commit**: `0c4654d`
+
+### March 7, 2026 - SKY BLUE UI Refresh
+- **Updated**: Complete UI refresh with Sky Blue accent color palette
+- **Changed**: Accent color from slate to sky (Tailwind `sky-*` palette)
+- **Primary Buttons**: Now use `sky-600/700/800` (New, Create plan, Conclude engagement)
+- **Secondary Buttons**: Hover states changed to `sky-50/100` with `sky-200` borders
+- **Sidebar Active Plan**: Implemented Option B styling - `sky-50` background with `sky-500` left accent bar (4px)
+- **Progress Bars**: Current progress uses `sky-600`, success probability uses `sky-400`
+- **Date Picker**: Selected dates now use `sky-600`
+- **Drag-Drop Indicators**: Changed from `blue-500` to `sky-500`
+- **Active Step Cards**: Added automatic sky blue highlighting (`sky-50` background, `sky-200` border) when focused
+- **User Experience**: Clear visual feedback showing which plan and which step card you're currently working on
+- **Result**: More cohesive, professional appearance with better visual hierarchy
+- **GitHub**: `e7686e1`
+- **Deployed**: https://63a809da.webapp-5fs.pages.dev
 
 ### February 23, 2026 - Collapsible Fixed Sidebar
 - **Added**: Sidebar is now fixed and doesn't scroll with main content
